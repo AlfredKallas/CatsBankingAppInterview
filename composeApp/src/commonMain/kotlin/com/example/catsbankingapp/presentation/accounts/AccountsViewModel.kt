@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class AccountsViewModel(presenter: MainScreenPresenter) : ViewModel() {
+class AccountsViewModel(presenter: AccountsPresenter) : ViewModel() {
     init {
         viewModelScope.launch {
             presenter.getBanksUIList()
@@ -12,4 +12,6 @@ class AccountsViewModel(presenter: MainScreenPresenter) : ViewModel() {
     }
 
     val uiState = presenter.uiState
+
+    val events = presenter.events
 }

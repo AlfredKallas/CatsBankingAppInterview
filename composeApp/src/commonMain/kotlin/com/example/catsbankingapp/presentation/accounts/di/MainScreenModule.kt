@@ -1,7 +1,7 @@
 package com.example.catsbankingapp.presentation.accounts.di
 
-import com.example.catsbankingapp.presentation.accounts.MainScreenPresenter
-import com.example.catsbankingapp.presentation.accounts.MainScreenPresenterImpl
+import com.example.catsbankingapp.presentation.accounts.AccountsPresenter
+import com.example.catsbankingapp.presentation.accounts.AccountsPresenterImpl
 import com.example.catsbankingapp.presentation.accounts.AccountsViewModel
 import com.example.catsbankingapp.presentation.accounts.mappers.AccountsUIStateMapper
 import com.example.catsbankingapp.presentation.accounts.mappers.AccountsUIStateMapperImpl
@@ -32,8 +32,8 @@ val mainScreenModule = module {
         BanksListScreenMapperImpl(get())
     }
 
-    factory<MainScreenPresenter> {
-        MainScreenPresenterImpl(get(), get())
+    factory<AccountsPresenter> {
+        AccountsPresenterImpl(get(), get())
 
     }
 

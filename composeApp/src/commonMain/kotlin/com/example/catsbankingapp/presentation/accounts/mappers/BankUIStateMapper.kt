@@ -1,24 +1,37 @@
 package com.example.catsbankingapp.presentation.accounts.mappers
 
 import com.example.catsbankingapp.domain.models.Bank
+import com.example.catsbankingapp.presentation.accounts.AccountsPresenterActions
 import com.example.catsbankingapp.presentation.accounts.models.BankUIModel
 
 interface BankUIStateMapper {
-    fun toUIModel(bank: Bank): BankUIModel
-    fun toUIModelList(banks: List<Bank>): List<BankUIModel>
+    fun toUIModel(
+        bank: Bank,
+        accountsPresenterActions: AccountsPresenterActions
+    ): BankUIModel
+    fun toUIModelList(
+        banks: List<Bank>,
+        accountsPresenterActions: AccountsPresenterActions
+    ): List<BankUIModel>
 }
 
 class BankUIStateMapperImpl(private val accountsUIStateMapper: AccountsUIStateMapper) : BankUIStateMapper {
-    override fun toUIModel(bank: Bank): BankUIModel {
+    override fun toUIModel(
+        bank: Bank,
+        accountsPresenterActions: AccountsPresenterActions
+    ): BankUIModel {
         return BankUIModel(
             title = bank.name.orEmpty(),
-            accounts = accountsUIStateMapper.toUIModel(bank.accounts),
+            accounts = accountsUIStateMapper.toUIModel(bank.accounts, accountsPresenterActions),
             totalAccountsBalances = bank.accounts.sumOf { it.balance ?: 0.0 }.toString()
         )
     }
 
-    override fun toUIModelList(banks: List<Bank>): List<BankUIModel> {
-        return banks.map { toUIModel(it) }
+    override fun toUIModelList(
+        banks: List<Bank>,
+        accountsPresenterActions: AccountsPresenterActions
+    ): List<BankUIModel> {
+        return banks.map { toUIModel(it, accountsPresenterActions) }
     }
 
 }

@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -49,9 +50,18 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountsScreen(modifier: Modifier = Modifier) {
+fun AccountsScreen(modifier: Modifier = Modifier, navigateToAccountScreen: (String) -> Unit = {}) {
     val viewModel = koinViewModel<AccountsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel){
+        viewModel.events.collect {
+            when(val event = it) {
+                is AccountsEvents.OnAccountClicked -> navigateToAccountScreen.invoke(event.accountId)
+            }
+        }
+    }
+
     AccountsScreen(modifier, uiState)
 }
 

@@ -19,7 +19,13 @@ fun mainAppNavHost() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = AccountsList) {
-        composable<AccountsList> { AccountsScreen()}
-        composable<OperationsForAccount> { }
+        composable<AccountsList> {
+            AccountsScreen(navigateToAccountScreen = {
+                navController.navigate(OperationsForAccount(it))
+            })
+        }
+        composable<OperationsForAccount> {
+            
+        }
     }
 }
