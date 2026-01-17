@@ -1,7 +1,7 @@
-package com.example.catsbankingapp.presentation.mainScreen.mappers
+package com.example.catsbankingapp.presentation.accounts.mappers
 
 import com.example.catsbankingapp.domain.models.Bank
-import com.example.catsbankingapp.presentation.mainScreen.models.BankSectionUIModel
+import com.example.catsbankingapp.presentation.accounts.models.BankSectionUIModel
 
 interface BankSectionMapper {
     fun toUIModel(title: String, banks: List<Bank>): BankSectionUIModel

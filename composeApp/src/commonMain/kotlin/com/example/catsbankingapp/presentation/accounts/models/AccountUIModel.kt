@@ -1,4 +1,4 @@
-package com.example.catsbankingapp.presentation.mainScreen.models
+package com.example.catsbankingapp.presentation.accounts.models
 
 import kotlinx.serialization.Serializable
 
@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class AccountUIModel(
     val title: String,
     val accountBalance: String,
-    val onClick: () -> Unit
+    val onClick: (String) -> Unit
 )

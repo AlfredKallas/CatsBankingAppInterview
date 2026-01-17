@@ -1,10 +1,10 @@
-package com.example.catsbankingapp.presentation.mainScreen
+package com.example.catsbankingapp.presentation.accounts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class MainScreenViewModel(presenter: MainScreenPresenter) : ViewModel() {
+class AccountsViewModel(presenter: MainScreenPresenter) : ViewModel() {
     init {
         viewModelScope.launch {
             presenter.getBanksUIList()

@@ -1,4 +1,4 @@
-package com.example.catsbankingapp.presentation.mainScreen.models
+package com.example.catsbankingapp.presentation.accounts.models
 
 data class BankUIModel(
     val title: String,

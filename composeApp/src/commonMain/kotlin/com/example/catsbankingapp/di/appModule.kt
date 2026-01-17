@@ -2,7 +2,7 @@ package com.example.catsbankingapp.di
 
 import com.example.catsbankingapp.core.network.AppConfig
 import com.example.catsbankingapp.domain.di.useCasesModule
-import com.example.catsbankingapp.presentation.mainScreen.di.mainScreenModule
+import com.example.catsbankingapp.presentation.accounts.di.mainScreenModule
 
 fun appModule(appConfig: AppConfig) =
     listOf(

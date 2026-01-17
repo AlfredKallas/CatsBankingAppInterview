@@ -1,7 +1,6 @@
-package com.example.catsbankingapp.presentation.mainScreen.models
+package com.example.catsbankingapp.presentation.accounts.models
 
 data class BanksListScreenUIModel(
-    val title: String,
     val CABankSection: BankSectionUIModel,
     val otherBanksSection: BankSectionUIModel
 )

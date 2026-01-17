@@ -1,7 +1,7 @@
-package com.example.catsbankingapp.presentation.mainScreen.mappers
+package com.example.catsbankingapp.presentation.accounts.mappers
 
 import com.example.catsbankingapp.domain.models.Bank
-import com.example.catsbankingapp.presentation.mainScreen.models.BankUIModel
+import com.example.catsbankingapp.presentation.accounts.models.BankUIModel
 
 interface BankUIStateMapper {
     fun toUIModel(bank: Bank): BankUIModel

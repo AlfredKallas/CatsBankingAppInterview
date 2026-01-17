@@ -38,14 +38,19 @@ kotlin {
 
         }
         commonMain.dependencies {
+            //Compose
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
+            implementation(libs.material.icons.extended)
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.compose.components.resources)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            //Compose Navigation
+            implementation(libs.compose.navigation)
 
             // Koin
             implementation(project.dependencies.platform(libs.koin.bom))
