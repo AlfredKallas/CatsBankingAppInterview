@@ -11,10 +11,3 @@ interface ServiceType<T> {
         get() = emptyMap()
     val method: HttpMethod
 }
-
-class BankAccountsService<T: Any> : ServiceType<T> {
-    override val path: String
-        get() = "/banks.json"
-    override val method: HttpMethod
-        get() = HttpMethod.Get
-}

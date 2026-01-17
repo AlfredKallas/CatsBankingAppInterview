@@ -7,7 +7,7 @@
 
 
 enum BaseUrl: String {
-    case development = "https://cdf-test-mobile-default-rtdb..europe-west1.firebasedatabase.app"
+    case development = "https://cdf-test-mobile-default-rtdb.europe-west1.firebasedatabase.app"
 }
 
 class ServerConfig {

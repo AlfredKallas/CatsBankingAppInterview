@@ -26,11 +26,7 @@ private const val CALL_CONNECTION_TIMOUT: Long = 20_000
 // 2. Shared configuration logic (Extension function to avoid duplication)
 fun <T : HttpClientEngineConfig>HttpClientConfig<T>.configureCommon(config: AppConfig, json: Json) {
     install(ContentNegotiation) {
-        json(json = Json {
-            prettyPrint = true
-            isLenient = true
-            ignoreUnknownKeys = true
-        })
+        json(json)
     }
 
     install(Logging) {

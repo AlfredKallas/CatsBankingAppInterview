@@ -11,6 +11,6 @@ class CatsBankingApplication: Application() {
             isDebug = BuildConfig.DEBUG,
             baseUrl = BuildConfig.BASE_URL
         )
-        initKoin(appConfig)
+        initKoin(this, appConfig)
     }
 }

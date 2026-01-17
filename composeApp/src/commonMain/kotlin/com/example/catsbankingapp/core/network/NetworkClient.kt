@@ -4,16 +4,21 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.request
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
 import io.ktor.http.isSuccess
 import io.ktor.serialization.JsonConvertException
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import io.ktor.util.reflect.TypeInfo
 import io.ktor.util.reflect.typeInfo
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 
-class NetworkClient(val appConfig: AppConfig, val httpClient: HttpClient) {
+class NetworkClient(
+    private val dispatcher: CoroutineDispatcher,
+    private val appConfig: AppConfig,
+    private val httpClient: HttpClient
+) {
 
     inline fun <reified T : Any> performNetworkCall(serviceType: ServiceType<T>): Flow<Result<T>> {
         return performNetworkCallInternal(serviceType, typeInfo<T>())
@@ -22,13 +27,11 @@ class NetworkClient(val appConfig: AppConfig, val httpClient: HttpClient) {
     @PublishedApi
     internal fun <T : Any> performNetworkCallInternal(
         serviceType: ServiceType<T>,
-        typeInfo: TypeInfo
+        typeInfo: TypeInfo,
     ): Flow<Result<T>> = flow {
         try {
-            val httpResponse = httpClient.request {
+            val httpResponse = httpClient.request(appConfig.baseUrl) {
                 url({
-                    protocol = URLProtocol.HTTPS
-                    host = appConfig.baseUrl
                     pathSegments = serviceType.path.split("/")
                     serviceType.queryParameters.forEach {
                         parameters.append(it.key, it.value)
@@ -40,22 +43,23 @@ class NetworkClient(val appConfig: AppConfig, val httpClient: HttpClient) {
                 method = serviceType.method
             }
             if (!httpResponse.status.isSuccess()) {
-                val error: Result<Nothing> = parseNetworkErrorExceptions(httpResponse.status)
+                val error: Result<T> = parseNetworkErrorExceptions(httpResponse.status)
                 emit(error)
+                return@flow
             }
             emit(Result.success(httpResponse.body(typeInfo)))
         } catch (ex: Exception) {
             emit(parseAndConvertException(ex))
         }
-    }
+    }.flowOn(dispatcher)
 
-    private fun parseAndConvertException(ex: Throwable): Result<Nothing> = when (ex) {
+    private fun <T>parseAndConvertException(ex: Throwable): Result<T> = when (ex) {
         is IllegalStateException -> Result.failure(CatsBankingException.UnknownErrorException("Illegal State: ${ex.message}"))
         is JsonConvertException -> Result.failure(CatsBankingException.UnknownErrorException("Json Convert Error: ${ex.message}"))
         else -> Result.failure(CatsBankingException.UnknownErrorException("Unknown Error: ${ex.message}"))
     }
 
-    private fun parseNetworkErrorExceptions(httpResponseCode: HttpStatusCode): Result.failure =
+    private fun <T>parseNetworkErrorExceptions(httpResponseCode: HttpStatusCode): Result<T> =
         when (httpResponseCode) {
             HttpStatusCode.BadRequest -> Result.failure(
                 CatsBankingException.BadRequestException("Bad Request")

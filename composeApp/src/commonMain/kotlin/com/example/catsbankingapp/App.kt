@@ -18,10 +18,13 @@ import org.jetbrains.compose.resources.painterResource
 
 import catsbankingapp.composeapp.generated.resources.Res
 import catsbankingapp.composeapp.generated.resources.compose_multiplatform
+import com.example.catsbankingapp.presentation.mainScreen.MainScreenViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
 fun App() {
+//    val viewModel: MainScreenViewModel = koinViewModel()
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(

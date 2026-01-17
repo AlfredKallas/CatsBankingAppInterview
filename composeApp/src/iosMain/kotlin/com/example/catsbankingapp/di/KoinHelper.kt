@@ -13,6 +13,6 @@ fun initKoin(
     )
 
     startKoin {
-        modules(networkModule(config))
+        modules(appModule(config))
     }
 }

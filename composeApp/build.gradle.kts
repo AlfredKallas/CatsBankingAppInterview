@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -57,6 +58,9 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.auth)
+
+            //Kotlinx date Time
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -109,11 +113,11 @@ android {
             dimension = "version"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            buildConfigField("String", "BASE_URL", "\"https://cdf-test-mobile-default-rtdb..europe-west1.firebasedatabase.app\"")
+            buildConfigField("String", "BASE_URL", "\"https://cdf-test-mobile-default-rtdb.europe-west1.firebasedatabase.app\"")
         }
         create("prod") {
             dimension = "version"
-            buildConfigField("String", "BASE_URL", "\"https://cdf-test-mobile-default-rtdb..europe-west1.firebasedatabase.app\"")
+            buildConfigField("String", "BASE_URL", "\"https://cdf-test-mobile-default-rtdb.europe-west1.firebasedatabase.app\"")
         }
     }
 
