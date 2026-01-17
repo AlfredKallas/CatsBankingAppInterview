@@ -19,13 +19,13 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,6 +57,7 @@ fun AccountsScreen(modifier: Modifier = Modifier, navigateToAccountScreen: (Stri
         viewModel.events.collect {
             when(val event = it) {
                 is AccountsEvents.OnAccountClicked -> navigateToAccountScreen.invoke(event.accountId)
+                is AccountsEvents.OnRetryClicked -> viewModel.getBanksList()
             }
         }
     }
@@ -70,15 +71,18 @@ fun AccountsScreen(modifier: Modifier = Modifier, uiState: BanksListScreenUIStat
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
-        topBar = { TopAppBar(title = { Text(uiState.screenTitle) }) }
+        topBar = { CenterAlignedTopAppBar(title = { Text(uiState.screenTitle) }) }
     ) { paddingValues ->
         Box(
             modifier = Modifier.padding(paddingValues)
         ) {
-            when (val state = uiState) {
+            when (uiState) {
                 is BanksListScreenUIState.Loading -> LoadingScreen()
-                is BanksListScreenUIState.Success -> AccountsScreenContent(banksList = state.banksList)
-                is BanksListScreenUIState.Error -> ErrorScreen(state.message)
+                is BanksListScreenUIState.Success -> AccountsScreenContent(banksList = uiState.banksList)
+                is BanksListScreenUIState.Error -> ErrorScreen(
+                    message = uiState.message,
+                    onRetry = uiState.onRetry
+                )
             }
         }
     }

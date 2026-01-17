@@ -4,12 +4,10 @@ import com.example.catsbankingapp.core.local.LocalBanksListDataSource
 import com.example.catsbankingapp.core.network.NetworkClient
 import com.example.catsbankingapp.data.models.BankModel
 import com.example.catsbankingapp.data.serviceType.BankAccountsService
-import com.example.catsbankingapp.utils.mapOnSuccess
+import com.example.catsbankingapp.utils.onSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flowOf
 
 interface BanksListRepository {
@@ -26,9 +24,8 @@ class BanksListRepositoryImpl(
             if (result.isSuccess) {
                 flowOf(result)
             } else {
-                networkClient.performNetworkCall(BankAccountsService()).mapOnSuccess {
+                networkClient.performNetworkCall(BankAccountsService()).onSuccess {
                     localBanksListDataSource.saveBanksList(it)
-                    it
                 }
             }
         }

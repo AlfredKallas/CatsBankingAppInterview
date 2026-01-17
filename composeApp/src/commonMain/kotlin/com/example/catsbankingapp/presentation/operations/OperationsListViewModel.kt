@@ -17,10 +17,15 @@ class OperationsListViewModel(
 
     val uiState = operationsListPresenter.uiState
 
+    val events = operationsListPresenter.events
+
     init {
+        getAccountOperationsList()
+    }
+
+    fun getAccountOperationsList(){
         viewModelScope.launch {
             operationsListPresenter.getAccountOperationsList(accountID)
         }
-
     }
 }

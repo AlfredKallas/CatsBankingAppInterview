@@ -4,8 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class AccountsViewModel(presenter: AccountsPresenter) : ViewModel() {
+class AccountsViewModel(private val presenter: AccountsPresenter) : ViewModel() {
+
     init {
+        viewModelScope.launch {
+            getBanksList()
+        }
+    }
+
+    fun getBanksList() {
         viewModelScope.launch {
             presenter.getBanksUIList()
         }

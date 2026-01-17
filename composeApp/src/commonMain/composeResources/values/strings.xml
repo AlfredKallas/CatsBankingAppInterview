@@ -1,0 +1,7 @@
+<resources>
+    <string name="Accounts_List_Screen_Title">My Accounts</string>
+    <string name="Accounts_List_Screen_CA_Section_Title">Credit Agricole</string>
+    <string name="Accounts_List_Screen_Other_Banks_Section_Title">Other Banks</string>
+
+    <string name="Error_Screen_Retry_Btn_Title">Retry</string>
+</resources>

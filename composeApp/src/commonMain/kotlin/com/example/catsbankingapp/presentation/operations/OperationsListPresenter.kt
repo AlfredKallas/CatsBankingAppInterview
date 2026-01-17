@@ -3,18 +3,26 @@ package com.example.catsbankingapp.presentation.operations
 import com.example.catsbankingapp.domain.GetAccountOperationsListUseCase
 import com.example.catsbankingapp.presentation.operations.mappers.AccountOperationsScreenModelMapper
 import com.example.catsbankingapp.presentation.operations.models.AccountOperationsScreenModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 sealed class OperationsListUIState() {
     object Loading : OperationsListUIState()
     data class Success(val accountOperationsScreenModel: AccountOperationsScreenModel) : OperationsListUIState()
-    data class Error(val message: String) : OperationsListUIState()
+    data class Error(val message: String, val onRetry: () -> Unit = {}) : OperationsListUIState()
+}
+
+sealed class OperationsListEvents() {
+    object OnRetryClicked : OperationsListEvents()
 }
 
 interface OperationsListPresenter {
     val uiState: StateFlow<OperationsListUIState>
+
+    val events: SharedFlow<OperationsListEvents>
 
     suspend fun getAccountOperationsList(accountId: String)
 }
@@ -26,6 +34,11 @@ class OperationsListPresenterImpl(
     private val _uiState = MutableStateFlow<OperationsListUIState>(OperationsListUIState.Loading)
     override val uiState: StateFlow<OperationsListUIState> = _uiState.asStateFlow()
 
+    private val _events = MutableSharedFlow<OperationsListEvents>(
+        replay = 1,
+    )
+    override val events: SharedFlow<OperationsListEvents> = _events
+
     override suspend fun getAccountOperationsList(accountId: String) {
         getAccountOperationsListUseCase.getAccountOperationsList(accountId).collect { result ->
             result.onSuccess {
@@ -34,9 +47,14 @@ class OperationsListPresenterImpl(
                 )
             }.onFailure {
                 _uiState.value = OperationsListUIState.Error(
-                    it.message.orEmpty()
+                    it.message.orEmpty(),
+                    onRetry = { onRetryClicked() }
                 )
             }
         }
+    }
+
+    private fun onRetryClicked() {
+        _events.tryEmit(OperationsListEvents.OnRetryClicked)
     }
 }
