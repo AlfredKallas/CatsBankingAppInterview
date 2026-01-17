@@ -12,7 +12,7 @@ interface BankSectionMapper {
     ): BankSectionUIModel
 }
 
-class BankSectionMapperImpl(private val bankUIStateMapper: BankUIStateMapper) : BankSectionMapper {
+class BankSectionMapperImpl(private val bankUIModelMapper: BankUIModelMapper) : BankSectionMapper {
     override fun toUIModel(
         title: String,
         banks: List<Bank>,
@@ -20,7 +20,7 @@ class BankSectionMapperImpl(private val bankUIStateMapper: BankUIStateMapper) : 
     ): BankSectionUIModel {
         return BankSectionUIModel(
             title = title,
-            banks = bankUIStateMapper.toUIModelList(banks, accountsPresenterActions)
+            banks = bankUIModelMapper.toUIModelList(banks, accountsPresenterActions)
         )
     }
 

@@ -52,6 +52,10 @@ kotlin {
             //Compose Navigation
             implementation(libs.compose.navigation)
 
+            //Navigation Event
+            implementation(libs.compose.navigationEvent)
+
+
             // Koin
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

@@ -40,7 +40,9 @@ class AccountsPresenterImpl(
     private val _uiState = MutableStateFlow<BanksListScreenUIState>(BanksListScreenUIState.Loading("Mes Comptes"))
     override val uiState: StateFlow<BanksListScreenUIState> = _uiState.asStateFlow()
 
-    private val _events = MutableSharedFlow<AccountsEvents>()
+    private val _events = MutableSharedFlow<AccountsEvents>(
+        replay = 1,
+    )
     override val events: SharedFlow<AccountsEvents> = _events
 
     override suspend fun getBanksUIList() =

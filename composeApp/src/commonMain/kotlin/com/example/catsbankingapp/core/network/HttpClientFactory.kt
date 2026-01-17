@@ -20,8 +20,8 @@ expect class HttpClientFactory() {
     fun create(config: AppConfig, json: Json): HttpClient
 }
 
-private const val CALL_REQUEST_TIMOUT: Long = 20_000
-private const val CALL_CONNECTION_TIMOUT: Long = 20_000
+private const val CALL_REQUEST_TIMOUT: Long = 10_000
+private const val CALL_CONNECTION_TIMOUT: Long = 10_000
 
 // 2. Shared configuration logic (Extension function to avoid duplication)
 fun <T : HttpClientEngineConfig>HttpClientConfig<T>.configureCommon(config: AppConfig, json: Json) {

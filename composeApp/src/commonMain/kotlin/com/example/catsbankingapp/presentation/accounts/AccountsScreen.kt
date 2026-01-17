@@ -53,7 +53,7 @@ fun AccountsScreen(modifier: Modifier = Modifier, navigateToAccountScreen: (Stri
     val viewModel = koinViewModel<AccountsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(viewModel){
+    LaunchedEffect(Unit){
         viewModel.events.collect {
             when(val event = it) {
                 is AccountsEvents.OnAccountClicked -> navigateToAccountScreen.invoke(event.accountId)
@@ -327,7 +327,6 @@ fun AccountsScreenErrorPreview() {
         )
     }
 }
-
 
 
 

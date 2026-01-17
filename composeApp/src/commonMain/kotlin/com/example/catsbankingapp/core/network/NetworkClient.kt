@@ -1,5 +1,6 @@
 package com.example.catsbankingapp.core.network
 
+import com.example.catsbankingapp.core.CatsBankingException
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.request

@@ -13,13 +13,13 @@ data class Operation(
     val date: LocalDateTime? = null
 )
 
-fun OperationModel.toOperation(dateTimeParser: DateTimeParser) = Operation(
+fun OperationModel.toOperation(dateTimeParser: DateTimeParser? = null) = Operation(
     id = this.id,
     title = this.title,
     amount = this.amount,
     category = this.category,
-    date = this.date?.toLong()?.let { dateTimeParser.parse(it) }
+    date = this.date?.toLong()?.let { dateTimeParser?.parse(it) }
 )
 
-fun List<OperationModel>.toOperationList(dateTimeParser: DateTimeParser) =
+fun List<OperationModel>.toOperationList(dateTimeParser: DateTimeParser? = null) =
     this.map { it.toOperation(dateTimeParser) }

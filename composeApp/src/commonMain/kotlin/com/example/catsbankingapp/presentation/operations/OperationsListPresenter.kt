@@ -1,0 +1,42 @@
+package com.example.catsbankingapp.presentation.operations
+
+import com.example.catsbankingapp.domain.GetAccountOperationsListUseCase
+import com.example.catsbankingapp.presentation.operations.mappers.AccountOperationsScreenModelMapper
+import com.example.catsbankingapp.presentation.operations.models.AccountOperationsScreenModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+sealed class OperationsListUIState() {
+    object Loading : OperationsListUIState()
+    data class Success(val accountOperationsScreenModel: AccountOperationsScreenModel) : OperationsListUIState()
+    data class Error(val message: String) : OperationsListUIState()
+}
+
+interface OperationsListPresenter {
+    val uiState: StateFlow<OperationsListUIState>
+
+    suspend fun getAccountOperationsList(accountId: String)
+}
+
+class OperationsListPresenterImpl(
+    private val getAccountOperationsListUseCase: GetAccountOperationsListUseCase,
+    private val accountOperationsScreenModelMapper: AccountOperationsScreenModelMapper
+) : OperationsListPresenter {
+    private val _uiState = MutableStateFlow<OperationsListUIState>(OperationsListUIState.Loading)
+    override val uiState: StateFlow<OperationsListUIState> = _uiState.asStateFlow()
+
+    override suspend fun getAccountOperationsList(accountId: String) {
+        getAccountOperationsListUseCase.getAccountOperationsList(accountId).collect { result ->
+            result.onSuccess {
+                _uiState.value = OperationsListUIState.Success(
+                    accountOperationsScreenModelMapper.toUIModel(it)
+                )
+            }.onFailure {
+                _uiState.value = OperationsListUIState.Error(
+                    it.message.orEmpty()
+                )
+            }
+        }
+    }
+}

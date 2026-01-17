@@ -4,14 +4,14 @@ import com.example.catsbankingapp.domain.models.Account
 import com.example.catsbankingapp.presentation.accounts.AccountsPresenterActions
 import com.example.catsbankingapp.presentation.accounts.models.AccountUIModel
 
-interface AccountsUIStateMapper {
+interface AccountsUIModelMapper {
     fun toUIModel(
         accounts: List<Account>,
         accountsPresenterActions: AccountsPresenterActions
     ): List<AccountUIModel>
 }
 
-class AccountsUIStateMapperImpl : AccountsUIStateMapper{
+class AccountsUIModelMapperImpl : AccountsUIModelMapper{
     override fun toUIModel(
         accounts: List<Account>,
         accountsPresenterActions: AccountsPresenterActions

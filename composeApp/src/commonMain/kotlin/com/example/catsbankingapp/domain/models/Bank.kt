@@ -9,11 +9,11 @@ data class Bank(
     val accounts: List<Account> = listOf()
 )
 
-fun BankModel.toBank(dateTimeParser: DateTimeParser) = Bank(
+fun BankModel.toBank(dateTimeParser: DateTimeParser? = null) = Bank(
     name = this.name,
     isCA = this.isCA,
     accounts = this.accounts.toAccountList(dateTimeParser)
 )
 
-fun List<BankModel>.toBankList(dateTimeParser: DateTimeParser) =
+fun List<BankModel>.toBankList(dateTimeParser: DateTimeParser? = null) =
     this.map { it.toBank(dateTimeParser) }
