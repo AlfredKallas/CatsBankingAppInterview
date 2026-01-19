@@ -17,8 +17,10 @@ material-icons-extended = "1.7.3"
 junit = "4.13.2"
 kotlin = "2.3.0"
 kotlinx-datetime = "0.7.1"
-koin-bom = "4.2.0-beta2"
+koin-bom = "4.2.0-beta3"
 ktor = "3.3.3"
+ktx-coroutines-test = "1.10.2"
+
 
 [libraries]
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
@@ -29,7 +31,6 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMul
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icons-extended" }
 compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
 compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
@@ -59,9 +60,15 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
 #kotlinx date time
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
+#test
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutines-test = { module= "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "ktx-coroutines-test" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin-bom" }
 
 
 [plugins]
