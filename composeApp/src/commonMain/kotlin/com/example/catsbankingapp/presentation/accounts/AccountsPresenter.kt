@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import org.jetbrains.compose.resources.getString
+import com.example.catsbankingapp.utils.StringProvider
 
 sealed class BanksListScreenUIState(val screenTitle: String) {
     data class Loading(val title: String) : BanksListScreenUIState(title)
@@ -41,6 +41,7 @@ sealed class AccountsEvents {
 class AccountsPresenterImpl(
     private val getBanksListUseCase: GetBanksListUseCase,
     private val banksListScreenMapper: BanksListScreenMapper,
+    private val stringProvider: StringProvider
 ): AccountsPresenter, AccountsPresenterActions {
 
     private val _uiState = MutableStateFlow<BanksListScreenUIState>(BanksListScreenUIState.Loading("Mes Comptes"))
@@ -56,12 +57,12 @@ class AccountsPresenterImpl(
         getBanksListUseCase.getBanksList().collect { result ->
             result.onSuccess { banksList ->
                 _uiState.value = BanksListScreenUIState.Success(
-                    title = getString(Res.string.Accounts_List_Screen_Title),
+                    title = stringProvider.getString(Res.string.Accounts_List_Screen_Title),
                     banksList = banksListScreenMapper.mapToUIModel(banksList, this@AccountsPresenterImpl)
                 )
             }.onFailure {
                 _uiState.value = BanksListScreenUIState.Error(
-                    title = getString(Res.string.Accounts_List_Screen_Title),
+                    title = stringProvider.getString(Res.string.Accounts_List_Screen_Title),
                     message = it.message.orEmpty(),
                     onRetry = { onRetryClicked() }
                 )

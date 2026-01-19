@@ -1,0 +1,79 @@
+package com.example.catsbankingapp.presentation.accounts
+
+import com.example.catsbankingapp.data.BanksListRepository
+import com.example.catsbankingapp.data.FakeBanksListRepository
+import com.example.catsbankingapp.domain.GetBanksListUseCase
+import com.example.catsbankingapp.domain.mappers.AccountMapper
+import com.example.catsbankingapp.domain.mappers.AccountMapperImpl
+import com.example.catsbankingapp.domain.mappers.BankMapper
+import com.example.catsbankingapp.domain.mappers.BankMapperImpl
+import com.example.catsbankingapp.domain.mappers.OperationMapper
+import com.example.catsbankingapp.domain.mappers.OperationMapperImpl
+import com.example.catsbankingapp.presentation.accounts.mappers.BanksListScreenMapper
+import com.example.catsbankingapp.presentation.accounts.mappers.FakeBanksListScreenMapper
+import com.example.catsbankingapp.utils.DateTimeParser
+import com.example.catsbankingapp.utils.DateTimeParserImpl
+import com.example.catsbankingapp.utils.FakeStringProvider
+import com.example.catsbankingapp.utils.StringProvider
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.TimeZone
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class AccountsPresenterTest : KoinTest {
+
+    private val presenter: AccountsPresenter by inject()
+    private val fakeRepo: FakeBanksListRepository by inject()
+    private val testDispatcher = StandardTestDispatcher()
+
+    @BeforeTest
+    fun setup() {
+        startKoin {
+            modules(module {
+                single<TimeZone> { TimeZone.UTC }
+                singleOf(::DateTimeParserImpl) { bind<DateTimeParser>() }
+                singleOf(::OperationMapperImpl) { bind<OperationMapper>() }
+                singleOf(::AccountMapperImpl) { bind<AccountMapper>() }
+                singleOf(::BankMapperImpl) { bind<BankMapper>() }
+                single { FakeBanksListRepository() }
+                single<BanksListRepository> { get<FakeBanksListRepository>() }
+                singleOf(::GetBanksListUseCase)
+                single { FakeStringProvider() }
+                single<StringProvider> { get<FakeStringProvider>() }
+                singleOf(::FakeBanksListScreenMapper) { bind<BanksListScreenMapper>() }
+                singleOf(::AccountsPresenterImpl) { bind<AccountsPresenter>() }
+            })
+        }
+    }
+
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
+    }
+
+    @Test
+    fun `getBanksUIList updates state to Success`() = runTest(testDispatcher) {
+        // Arrange
+        
+        // Act
+        presenter.getBanksUIList() 
+
+        // Assert
+        advanceUntilIdle()
+        val state = presenter.uiState.value
+        assertTrue(state is BanksListScreenUIState.Success)
+    }
+}
