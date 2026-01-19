@@ -57,7 +57,7 @@ class AccountMapperTest : KoinTest {
         assertEquals("My Account", result.label)
         assertEquals(100.0, result.balance)
         assertEquals(1, result.operations!!.size)
-        assertEquals("Title", result.operations!!.first().title)
+        assertEquals("Title", result.operations.first().title)
     }
 
     @Test

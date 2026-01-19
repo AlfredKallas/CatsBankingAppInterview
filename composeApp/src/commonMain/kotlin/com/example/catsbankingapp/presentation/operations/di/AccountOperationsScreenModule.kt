@@ -7,6 +7,8 @@ import com.example.catsbankingapp.presentation.operations.mappers.AccountOperati
 import com.example.catsbankingapp.presentation.operations.mappers.AccountOperationsScreenModelMapperImpl
 import com.example.catsbankingapp.presentation.operations.mappers.OperationUiModelMapper
 import com.example.catsbankingapp.presentation.operations.mappers.OperationUiModelMapperImpl
+import com.example.catsbankingapp.utils.DefaultNavArgsProvider
+import com.example.catsbankingapp.utils.NavArgsProvider
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -31,4 +33,7 @@ val accountOperationsScreenModule = module {
     }
 
     viewModelOf(::OperationsListViewModel)
+    factory<NavArgsProvider> {
+        DefaultNavArgsProvider(get())
+    }
 }

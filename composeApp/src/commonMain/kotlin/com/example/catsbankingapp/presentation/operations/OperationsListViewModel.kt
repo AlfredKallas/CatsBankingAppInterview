@@ -3,17 +3,22 @@ package com.example.catsbankingapp.presentation.operations
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavType
 import androidx.navigation.toRoute
 import com.example.catsbankingapp.presentation.navigation.OperationsForAccount
+import com.example.catsbankingapp.utils.NavArgsProvider
 import kotlinx.coroutines.launch
+import kotlin.reflect.typeOf
 
 class OperationsListViewModel(
-    savedStateHandle: SavedStateHandle,
     private val operationsListPresenter: OperationsListPresenter,
+    private val navArgsProvider: NavArgsProvider
 ): ViewModel() {
 
-    private val accountID: String =
-        savedStateHandle.toRoute<OperationsForAccount>().accountId
+    private val navArgs: OperationsForAccount = navArgsProvider.provideArg(OperationsForAccount::class,
+        typeMap = mapOf(
+            typeOf<String>() to NavType.StringType
+        ))
 
     val uiState = operationsListPresenter.uiState
 
@@ -31,7 +36,7 @@ class OperationsListViewModel(
 
     fun getAccountOperationsList(){
         viewModelScope.launch {
-            operationsListPresenter.getAccountOperationsList(accountID)
+            operationsListPresenter.getAccountOperationsList(navArgs.accountId)
         }
     }
 }
