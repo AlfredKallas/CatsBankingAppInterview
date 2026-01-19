@@ -225,6 +225,9 @@ fun AccountsList(
             if (index < accountsList.lastIndex) {
                 HorizontalDivider(
                     Modifier.fillMaxWidth()
+                        .padding(
+                            start = 32.dp
+                        )
                 )
             }
         }
