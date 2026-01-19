@@ -29,7 +29,7 @@ val accountsScreenModule = module {
     }
 
     factory<BanksListScreenMapper> {
-        BanksListScreenMapperImpl(get())
+        BanksListScreenMapperImpl(get(), get())
     }
 
     factory<AccountsPresenter> {

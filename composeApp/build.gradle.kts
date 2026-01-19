@@ -172,6 +172,21 @@ kover {
             includes {
                 classes("com.example.catsbankingapp.*")
             }
+            excludes {
+                classes(
+                    "com.example.catsbankingapp.di.*",
+                    "*ModuleKt",
+                    "*.BuildConfig",
+                    "*Activity",
+                    "*Application",
+                    "*ViewController*",
+                    "*AppKt",
+                    "com.example.catsbankingapp.core.network.HttpClientFactory*",
+                    "com.example.catsbankingapp.utils.currencyformatter.CurrencyFormatter*",
+                    "*.android.kt",
+                    "*.ios.kt"
+                )
+            }
         }
     }
 }

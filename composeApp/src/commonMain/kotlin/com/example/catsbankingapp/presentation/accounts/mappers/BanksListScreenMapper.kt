@@ -6,7 +6,7 @@ import catsbankingapp.composeapp.generated.resources.Res
 import com.example.catsbankingapp.domain.models.BanksList
 import com.example.catsbankingapp.presentation.accounts.AccountsPresenterActions
 import com.example.catsbankingapp.presentation.accounts.models.BanksListScreenUIModel
-import org.jetbrains.compose.resources.getString
+import com.example.catsbankingapp.utils.StringProvider
 
 interface BanksListScreenMapper {
     suspend fun mapToUIModel(
@@ -17,6 +17,7 @@ interface BanksListScreenMapper {
 
 class BanksListScreenMapperImpl(
     private val bankSectionMapper: BankSectionMapper,
+    private val stringProvider: StringProvider
 ) : BanksListScreenMapper {
     override suspend fun mapToUIModel(
         banksList: BanksList,
@@ -25,13 +26,13 @@ class BanksListScreenMapperImpl(
         return BanksListScreenUIModel(
             CABankSection =
                 bankSectionMapper.toUIModel(
-                    title = getString(Res.string.Accounts_List_Screen_CA_Section_Title),
+                    title = stringProvider.getString(Res.string.Accounts_List_Screen_CA_Section_Title),
                     banksList.CABanks,
                     accountsPresenterActions
                 ),
             otherBanksSection =
                 bankSectionMapper.toUIModel(
-                    getString(Res.string.Accounts_List_Screen_Other_Banks_Section_Title),
+                    stringProvider.getString(Res.string.Accounts_List_Screen_Other_Banks_Section_Title),
                     banksList.otherBanks,
                     accountsPresenterActions
                 )
