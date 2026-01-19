@@ -11,6 +11,25 @@ The project follows **Clean Architecture** principles, ensuring separation of co
 - **Presentation Layer**: Implements a hybrid **MVVM/MVI** pattern (Shared logic, platform-specific ViewModels).
 - **Dependency Injection**: Powered by **Koin**, ensuring modularity and easy mocking for tests.
 
+## 🌍 Environments & Build Variants
+
+The project uses **Android Product Flavors** and **Build Types** to manage different environments conceptually:
+
+### 🎨 Flavors
+- **`dev`**: Targeted at development and QA. Uses a dedicated test Firebase RTDB.
+- **`prod`**: Targeted at real users. Uses the production Firebase environment.
+
+### 🏗️ Build Types
+- **`debug`**: Optimized for development. Includes full logging, is debuggable, and skips code shrinking (R8) for faster builds.
+- **`release`**: Optimized for performance. Enables R8 (obfuscation and shrinking) to reduce binary size and harden the code.
+
+### 🧩 Combined Variants
+- **`devDebug`** (Recommended): The primary variant for daily development and automated testing.
+- **`prodRelease`**: The final artifact for distribution.
+
+> [!NOTE]
+> While both current flavors point to the same test URL for this interview demo, the architecture is fully prepared to swap configurations via `BuildConfig.BASE_URL`.
+
 ## 📦 Organization
 
 ```text
