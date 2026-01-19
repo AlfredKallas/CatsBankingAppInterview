@@ -1,35 +1,101 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# CatsBankingApp - Kotlin Multiplatform Interview Project
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+A modern, cross-platform banking application built with **Kotlin Multiplatform (KMP)** and **Compose Multiplatform**. This project demonstrates technical excellence in architecture, testing, and clean code practices.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## 🏗️ Architecture
 
-### Build and Run Android Application
+The project follows **Clean Architecture** principles, ensuring separation of concerns and high testability across platforms.
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+- **Data Layer**: Handles API communication (Ktor) and local persistence.
+- **Domain Layer**: Contains the "Source of Truth" models, Business Logic (UseCases), and Mappers to transform raw data.
+- **Presentation Layer**: Implements a hybrid **MVVM/MVI** pattern (Shared logic, platform-specific ViewModels).
+- **Dependency Injection**: Powered by **Koin**, ensuring modularity and easy mocking for tests.
 
-### Build and Run iOS Application
+## 📦 Organization
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+```text
+com.example.catsbankingapp
+├── core          # Networking, Local Storage, Exceptions
+├── data          # Repositories & DTOs
+├── domain        # UseCases, Domain Models & Mappers
+├── presentation  # Screens, ViewModels, Presenters & UI Models
+└── utils         # Shared helpers (Date, String, Flow extensions)
+```
 
----
+## 💉 Dependency Injection (Koin)
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+The project leverages **Koin** for lightweight and idiomatic dependency injection across the multiplatform codebase:
+- **Modular Design**: Each feature (Accounts, Operations) has its own Koin module.
+- **Testable**: Koin allows for easy swapping of real implementations with mocks (e.g., `FakeAccountsPresenter`) during unit and UI testing.
+- **Lifecycle Awareness**: ViewModels are injected using `koin-compose-viewmodel`, ensuring they follow the platform's lifecycle (especially on Android).
+
+- **Lifecycle Awareness**: ViewModels are injected using `koin-compose-viewmodel`, ensuring they follow the platform's lifecycle (especially on Android).
+
+## 🚦 UI State Management & UX
+
+The app uses a robust **State Machine** to manage the user experience across all screens:
+
+- **Loading State**: Displays a tailored loading indicator or shimmer while data is being fetched.
+- **Success State**: Renders the mapped domain data into a platform-agnostic UI model.
+- **Error State**: Shows a user-friendly error screen with specific feedback and a **Retry** action.
+
+### 🔄 Retry Mechanism
+When an error occurs, the UI offers a "Retry" button. This triggers a specific event (e.g., `OnRetryClicked`) through the Presenter, which re-executes the data fetching Flow, providing a seamless way for users to recover from transient network issues.
+
+## 🛡️ Error Handling & Exception Propagation
+
+The project implements a centralized and type-safe exception handling system:
+
+1. **Network Layer**: `NetworkClient` catches raw Ktor/Serialization exceptions and converts them into domain-specific **`CatsBankingException`** types (e.g., `NotFoundException`, `UnauthorizedException`).
+2. **Result Wrapper**: Errors are propagated up through the Repository and UseCase layers as encapsulated **`Result<T>`** objects.
+3. **Presenter Layer**: The Presenter handles the `onFailure` block, extracting the formatted message from the exception to update the UI State.
+4. **UI Layer**: The Composable Screen observes the `Error` state and displays the relevant message to the user.
+
+## 💾 Caching Strategy
+
+The app implements a **Local First** synchronization strategy in the `BanksListRepository`:
+1. Check **Local Data Source** for cached results.
+2. If cache hit: Return local data immediately.
+3. If cache miss: Fetch from **Network**, update the local cache, and emit the result.
+
+This ensures a smooth offline experience and reduced network overhead.
+
+## 🛠️ Utils & Helpers
+
+- **StringProvider**: Multiplatform abstraction for localized string resources.
+- **Date Utilities**: `DateTimeParser` and `DateFormatter` for reliable cross-platform time handling.
+- **FlowExt**: Custom extensions for handling `Result` types within Kotlin Flows.
+
+## 🧪 Testing Strategy
+
+The project features a comprehensive test suite (Unit + UI) shared in `commonTest`.
+
+### 1. Unit Tests
+Thoroughly covers:
+- **Mappers**: Ensuring perfect data transformation.
+- **UseCases**: Validating business rules.
+- **Presenters/ViewModels**: Testing state transitions and event handling.
+
+### 2. UI Tests (Compose Multiplatform)
+Shared UI tests verify the rendering of:
+- Loading states (shimmers/progress).
+- Success states (mocked data).
+- Error states (user-friendly messages).
+
+### 🚀 How to Run Tests
+
+| Platform | Command |
+| :--- | :--- |
+| **Android (Unit + UI Runtime)** | `./gradlew :composeApp:testDevDebugUnitTest` |
+| **iOS (Unit + UI Native)** | `./gradlew :composeApp:iosSimulatorArm64Test` |
+| **Coverage Report** | `./gradlew :composeApp:koverHtmlReportDevDebug` |
+
+> [!IMPORTANT]
+> **Android Instrumented Tests**: Avoid running `./gradlew connectedDevDebugAndroidTest` on an emulator. There is a known conflict between the Robolectric shadowing framework (used for high-speed JVM UI testing) and the real Android environment. Use the JVM task for 100% verification on Android.
+
+## 📊 Test Coverage (Kover)
+
+Test coverage is measured using **Kotlinx Kover**. You can generate a detailed HTML report to see exactly which lines are covered:
+
+1. Run: `./gradlew :composeApp:koverHtmlReportDevDebug`
+2. Open: `composeApp/build/reports/kover/htmlDevDebug/index.html`

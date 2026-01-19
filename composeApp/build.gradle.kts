@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
@@ -163,5 +164,15 @@ dependencies {
     androidTestImplementation(libs.androidx.testExt.junit)
     androidTestImplementation(libs.compose.ui.test.junit4.android)
     debugImplementation(libs.compose.ui.test.manifest.android)
+}
+
+kover {
+    reports {
+        filters {
+            includes {
+                classes("com.example.catsbankingapp.*")
+            }
+        }
+    }
 }
 
