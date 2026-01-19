@@ -59,7 +59,7 @@ class GetBanksListUseCaseTest : KoinTest {
     }
 
     @Test
-    fun `getBanksList partitions banks correctly`() = runTest {
+    fun getBanksList_partitions_banks_correctly() = runTest {
         // Arrange
         val caBank = BankModel(name = "CA Bank", isCA = true)
         val otherBank = BankModel(name = "Other Bank", isCA = false)

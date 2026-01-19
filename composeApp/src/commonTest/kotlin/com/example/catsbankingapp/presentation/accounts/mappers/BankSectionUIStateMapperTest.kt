@@ -39,7 +39,7 @@ class BankSectionUIStateMapperTest : KoinTest {
     }
 
     @Test
-    fun `toUIModel maps section correctly`() {
+    fun toUIModel_maps_section_correctly() {
         // Arrange
         val bank = Bank(name = "Bank 1", accounts = emptyList())
         val list = listOf(bank)

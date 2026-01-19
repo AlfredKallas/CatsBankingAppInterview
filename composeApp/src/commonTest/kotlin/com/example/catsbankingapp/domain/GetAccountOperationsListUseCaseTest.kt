@@ -56,7 +56,7 @@ class GetAccountOperationsListUseCaseTest : KoinTest {
     }
 
     @Test
-    fun `getAccountOperationsList returns account when found`() = runTest {
+    fun getAccountOperationsList_returns_account_when_found() = runTest {
         // Arrange
         val accountId = "123"
         val accountModel = AccountModel(id = accountId, label = "Test Account")
@@ -72,7 +72,7 @@ class GetAccountOperationsListUseCaseTest : KoinTest {
     }
 
     @Test
-    fun `getAccountOperationsList returns error when account not found`() = runTest {
+    fun getAccountOperationsList_returns_error_when_account_not_found() = runTest {
         // Arrange
         fakeRepository.banksListResult = Result.success(emptyList())
 

@@ -41,7 +41,7 @@ class BankMapperTest : KoinTest {
     }
 
     @Test
-    fun `toBank maps model correctly`() {
+    fun toBank_maps_model_correctly() {
         // Arrange
         val accountModel = AccountModel(id = "1")
         val bankModel = BankModel(
@@ -61,7 +61,7 @@ class BankMapperTest : KoinTest {
     }
 
     @Test
-    fun `toBankList maps list correctly`() {
+    fun toBankList_maps_list_correctly() {
         // Arrange
         val bankModel = BankModel(name = "Bank 1")
         val list = listOf(bankModel)

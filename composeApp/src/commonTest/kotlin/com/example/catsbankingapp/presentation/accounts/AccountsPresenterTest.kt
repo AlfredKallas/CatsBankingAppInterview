@@ -65,7 +65,7 @@ class AccountsPresenterTest : KoinTest {
     }
 
     @Test
-    fun `getBanksUIList updates state to Success`() = runTest(testDispatcher) {
+    fun getBanksUIList_updates_state_to_Success() = runTest(testDispatcher) {
         // Arrange
         
         // Act

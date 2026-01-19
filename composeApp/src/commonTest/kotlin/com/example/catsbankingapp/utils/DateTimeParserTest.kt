@@ -17,7 +17,7 @@ class DateTimeParserTest : KoinTest {
     }
 
     @Test
-    fun `parse returns correct LocalDate for epoch`() {
+    fun parse_returns_correct_LocalDate_for_epoch() {
         // Arrange
         val epochMillis = 1696464000000L // 2023-10-05T00:00:00Z
 

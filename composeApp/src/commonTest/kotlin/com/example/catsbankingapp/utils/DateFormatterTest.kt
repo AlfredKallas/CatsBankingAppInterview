@@ -16,7 +16,7 @@ class DateFormatterTest : KoinTest {
     }
 
     @Test
-    fun `format returns formatted date string`() {
+    fun format_returns_formatted_date_string() {
         // Arrange
         val date = LocalDate(2023, 10, 5)
 

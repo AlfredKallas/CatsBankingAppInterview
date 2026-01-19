@@ -38,7 +38,7 @@ class OperationMapperTest : KoinTest {
     }
 
     @Test
-    fun `toOperation maps model correctly`() {
+    fun toOperation_maps_model_correctly() {
         // Arrange
         val model = OperationModel(
             id = "1",
@@ -60,7 +60,7 @@ class OperationMapperTest : KoinTest {
     }
 
     @Test
-    fun `toOperationList maps list and sorts if comparator provided`() {
+    fun toOperationList_maps_list_and_sorts_if_comparator_provided() {
         // Arrange
         val model1 = OperationModel("1", "A", "10", "Cat", "1696464000000")
         val model2 = OperationModel("2", "B", "20", "Cat", "1696550400000")

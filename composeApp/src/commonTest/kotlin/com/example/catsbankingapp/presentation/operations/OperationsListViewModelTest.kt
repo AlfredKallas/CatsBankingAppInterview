@@ -63,7 +63,7 @@ class OperationsListViewModelTest : KoinTest {
     }
 
     @Test
-    fun `init calls getAccountOperationsList on presenter with correct accountId`() = runTest {
+    fun init_calls_getAccountOperationsList_on_presenter_with_correct_accountId() = runTest {
         // Init happens in BeforeTest
         
         // Assert

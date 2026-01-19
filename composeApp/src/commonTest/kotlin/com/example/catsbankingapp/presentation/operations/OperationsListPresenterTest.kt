@@ -66,7 +66,7 @@ class OperationsListPresenterTest : KoinTest {
     }
 
     @Test
-    fun `getAccountOperationsList updates state to Success`() = runTest {
+    fun getAccountOperationsList_updates_state_to_Success() = runTest {
         // Arrange
         val accountId = "123"
         val bankModel = BankModel(accounts = arrayListOf(AccountModel(id = accountId)))

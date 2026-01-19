@@ -39,7 +39,7 @@ class AccountMapperTest : KoinTest {
     }
 
     @Test
-    fun `toAccount maps model correctly`() {
+    fun toAccount_maps_model_correctly() {
         // Arrange
         val opModel = OperationModel("1", "Title", "10", "Cat", "1696464000000")
         val accountModel = AccountModel(
@@ -61,7 +61,7 @@ class AccountMapperTest : KoinTest {
     }
 
     @Test
-    fun `toAccountList maps list correctly`() {
+    fun toAccountList_maps_list_correctly() {
         // Arrange
         val accountModel = AccountModel(id = "1")
         val list = listOf(accountModel)

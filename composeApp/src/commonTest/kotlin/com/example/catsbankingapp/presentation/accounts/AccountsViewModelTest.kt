@@ -43,7 +43,7 @@ import kotlin.test.assertTrue
     }
 
     @Test
-    fun `init calls getBanksList on presenter`() = runTest {
+    fun init_calls_getBanksList_on_presenter() = runTest {
         // Accessing viewModel triggers init
         val vm = viewModel
         

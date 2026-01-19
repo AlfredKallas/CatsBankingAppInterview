@@ -37,7 +37,7 @@ class AccountsUIModelMapperTest : KoinTest {
     }
 
     @Test
-    fun `toUIModel maps account correctly and handles click`() {
+    fun toUIModel_maps_account_correctly_and_handles_click() {
         // Arrange
         val account = Account(
             id = "1",

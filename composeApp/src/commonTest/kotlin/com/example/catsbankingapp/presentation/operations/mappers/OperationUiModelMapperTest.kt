@@ -39,7 +39,7 @@ class OperationUiModelMapperTest : KoinTest {
     }
 
     @Test
-    fun `toUIModel maps operation correctly`() {
+    fun toUIModel_maps_operation_correctly() {
         // Arrange
         val operation = Operation(
             id = "1",
@@ -59,7 +59,7 @@ class OperationUiModelMapperTest : KoinTest {
     }
 
     @Test
-    fun `toUIModelList maps list correctly`() {
+    fun toUIModelList_maps_list_correctly() {
         // Arrange
         val operation = Operation(title = "Op 1", amount = 0.0)
         val list = listOf(operation)

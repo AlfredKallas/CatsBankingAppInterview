@@ -12,7 +12,7 @@ import kotlin.test.assertTrue
 class FlowExtTest : KoinTest {
 
     @Test
-    fun `mapOnSuccess transforms value on success`() = runTest {
+    fun mapOnSuccess_transforms_value_on_success() = runTest {
         // Arrange
         val flow = flowOf(Result.success(5))
 
@@ -24,7 +24,7 @@ class FlowExtTest : KoinTest {
     }
 
     @Test
-    fun `mapOnSuccess passes failure through`() = runTest {
+    fun mapOnSuccess_passes_failure_through() = runTest {
         // Arrange
         val exception = CatsBankingException.UnknownErrorException("test")
         val flow = flowOf(Result.failure<Int>(exception))
@@ -38,7 +38,7 @@ class FlowExtTest : KoinTest {
     }
 
     @Test
-    fun `mapResultOnSuccess transforms value to result on success`() = runTest {
+    fun mapResultOnSuccess_transforms_value_to_result_on_success() = runTest {
         // Arrange
         val flow = flowOf(Result.success(5))
 

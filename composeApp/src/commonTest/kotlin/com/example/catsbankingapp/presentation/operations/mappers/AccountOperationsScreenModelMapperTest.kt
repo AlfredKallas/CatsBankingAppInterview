@@ -39,7 +39,7 @@ class AccountOperationsScreenModelMapperTest : KoinTest {
     }
 
     @Test
-    fun `toUIModel maps account correctly`() {
+    fun toUIModel_maps_account_correctly() {
         // Arrange
         val account = Account(
             id = "1",

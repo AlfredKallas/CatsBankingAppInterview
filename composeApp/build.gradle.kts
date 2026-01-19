@@ -1,4 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,6 +12,8 @@ plugins {
 
 kotlin {
     androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -35,7 +39,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
 
             implementation(libs.koin.android)
-
+            
+            // Testing
         }
         commonMain.dependencies {
             //Compose
@@ -48,6 +53,7 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
 
             //Compose Navigation
             implementation(libs.compose.navigation)
@@ -77,7 +83,11 @@ kotlin {
             implementation(libs.koin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
-
+            
+            // Compose Testing
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(libs.compose.ui.test)
+            implementation(libs.robolectric)
         }
 
         iosMain.dependencies {
@@ -96,10 +106,16 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
         }
     }
     buildFeatures {
@@ -143,5 +159,9 @@ android {
 
 dependencies {
     debugImplementation(libs.compose.ui.tooling)
+    testImplementation(libs.androidx.testExt.junit)
+    androidTestImplementation(libs.androidx.testExt.junit)
+    androidTestImplementation(libs.compose.ui.test.junit4.android)
+    debugImplementation(libs.compose.ui.test.manifest.android)
 }
 

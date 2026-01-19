@@ -55,7 +55,7 @@ class BanksListRepositoryTest : KoinTest {
     }
 
     @Test
-    fun `getBanksList returns local data when available`() = runTest(testDispatcher) {
+    fun getBanksList_returns_local_data_when_available() = runTest(testDispatcher) {
         // Arrange
         val localData = listOf(BankModel(name = "Local Bank"))
         fakeLocalDataSource.localBanks = localData
@@ -72,7 +72,7 @@ class BanksListRepositoryTest : KoinTest {
     }
 
     @Test
-    fun `getBanksList fetches from network and saves to local when local is empty`() = runTest(testDispatcher) {
+    fun getBanksList_fetches_from_network_and_saves_to_local_when_local_is_empty() = runTest(testDispatcher) {
         // Arrange
         fakeLocalDataSource.localBanks = null // Local empty
 

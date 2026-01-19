@@ -20,6 +20,7 @@ kotlinx-datetime = "0.7.1"
 koin-bom = "4.2.0-beta3"
 ktor = "3.3.3"
 ktx-coroutines-test = "1.10.2"
+robolectric = "4.14.1"
 
 
 [libraries]
@@ -31,7 +32,7 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMul
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icons-extended" }
 compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
 compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
-kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeMultiplatform" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-testExt-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-testExt" }
@@ -69,7 +70,10 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutines-test = { module= "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "ktx-coroutines-test" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin-bom" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
+compose-ui-test-junit4-android = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "composeMultiplatform" }
+compose-ui-test-manifest-android = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeMultiplatform" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

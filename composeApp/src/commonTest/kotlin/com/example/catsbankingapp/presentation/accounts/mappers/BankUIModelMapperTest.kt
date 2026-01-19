@@ -39,7 +39,7 @@ class BankUIModelMapperTest : KoinTest {
     }
 
     @Test
-    fun `toUIModel maps bank correctly`() {
+    fun toUIModel_maps_bank_correctly() {
         // Arrange
         val account = Account(id = "1", balance = 100.0)
         val bank = Bank(
@@ -59,7 +59,7 @@ class BankUIModelMapperTest : KoinTest {
     }
 
     @Test
-    fun `toUIModelList maps list correctly`() {
+    fun toUIModelList_maps_list_correctly() {
         // Arrange
         val bank = Bank(name = "Bank 1", accounts = emptyList())
         val list = listOf(bank)
