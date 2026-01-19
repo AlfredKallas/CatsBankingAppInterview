@@ -89,6 +89,7 @@ kotlin {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(libs.compose.ui.test)
             implementation(libs.robolectric)
+            implementation(libs.turbine)
         }
 
         iosMain.dependencies {

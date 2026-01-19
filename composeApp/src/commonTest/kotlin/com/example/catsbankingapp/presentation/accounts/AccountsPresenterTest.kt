@@ -14,10 +14,10 @@ import com.example.catsbankingapp.presentation.accounts.mappers.FakeBanksListScr
 import com.example.catsbankingapp.utils.DateTimeParser
 import com.example.catsbankingapp.utils.DateTimeParserImpl
 import com.example.catsbankingapp.utils.FakeStringProvider
+import app.cash.turbine.test
 import com.example.catsbankingapp.utils.StringProvider
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 import org.koin.core.context.startKoin
@@ -36,7 +36,6 @@ import kotlin.test.assertTrue
 class AccountsPresenterTest : KoinTest {
 
     private val presenter: AccountsPresenter by inject()
-    private val fakeRepo: FakeBanksListRepository by inject()
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -64,16 +63,25 @@ class AccountsPresenterTest : KoinTest {
         stopKoin()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun getBanksUIList_updates_state_to_Success() = runTest(testDispatcher) {
         // Arrange
         
-        // Act
-        presenter.getBanksUIList() 
+        // Act & Assert
+        presenter.uiState.test {
+            // Initial state (Loading)
+            assertEquals("", (awaitItem() as BanksListScreenUIState.Loading).title)
 
-        // Assert
-        advanceUntilIdle()
-        val state = presenter.uiState.value
-        assertTrue(state is BanksListScreenUIState.Success)
+            presenter.getBanksUIList()
+
+            // State after getBanksUIList starts (Loading with title)
+            assertEquals("Fake String", (awaitItem() as BanksListScreenUIState.Loading).title)
+
+            // Final state (Success)
+            assertTrue(awaitItem() is BanksListScreenUIState.Success)
+            
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 }

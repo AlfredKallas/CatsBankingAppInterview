@@ -33,6 +33,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
+import app.cash.turbine.test
+
 class OperationsListPresenterTest : KoinTest {
 
     private val presenter: OperationsListPresenter by inject()
@@ -72,11 +74,17 @@ class OperationsListPresenterTest : KoinTest {
         val bankModel = BankModel(accounts = arrayListOf(AccountModel(id = accountId)))
         fakeRepo.banksListResult = Result.success(listOf(bankModel))
 
-        // Act
-        presenter.getAccountOperationsList(accountId)
+        // Act & Assert
+        presenter.uiState.test {
+            // Initial state (Loading)
+            assertTrue(awaitItem() is OperationsListUIState.Loading)
 
-        // Assert
-        val state = presenter.uiState.value
-        assertTrue(state is OperationsListUIState.Success)
+            presenter.getAccountOperationsList(accountId)
+
+            // Final state (Success)
+            assertTrue(awaitItem() is OperationsListUIState.Success)
+            
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 }

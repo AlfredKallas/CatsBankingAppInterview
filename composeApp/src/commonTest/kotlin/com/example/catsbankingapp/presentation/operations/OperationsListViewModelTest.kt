@@ -2,7 +2,6 @@ package com.example.catsbankingapp.presentation.operations
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavType
-import androidx.navigation.toRoute
 import com.example.catsbankingapp.presentation.navigation.OperationsForAccount
 import com.example.catsbankingapp.utils.NavArgsProvider
 import kotlinx.coroutines.Dispatchers
@@ -11,13 +10,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.core.module.dsl.bind
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
 import org.koin.test.KoinTest
-import org.koin.test.inject
 import kotlin.jvm.JvmSuppressWildcards
 import kotlin.reflect.KClass
 import kotlin.reflect.KType

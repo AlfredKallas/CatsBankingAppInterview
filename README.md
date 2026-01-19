@@ -10,6 +10,35 @@ The project follows **Clean Architecture** principles, ensuring separation of co
 - **Domain Layer**: Contains the "Source of Truth" models, Business Logic (UseCases), and Mappers to transform raw data.
 - **Presentation Layer**: Implements a hybrid **MVVM/MVI** pattern (Shared logic, platform-specific ViewModels).
 - **Dependency Injection**: Powered by **Koin**, ensuring modularity and easy mocking for tests.
+- **Reactive State**: Driven by **Kotlin Flows**, unified with **Turbine** for testing.
+
+## 🛠️ Tech Stack
+
+This project leverages a modern and robust set of libraries to provide a high-quality multiplatform experience.
+
+### Core Libraries
+- **Kotlin**: v2.3.0
+- **Ktor** (Networking): `client-core`, `client-okhttp`, `client-darwin`, `client-logging`, `client-auth`, `client-content-negotiation`, `serialization-kotlinx-json`.
+- **Koin** (Dependency Injection): `koin-bom`, `koin-core`, `koin-android`, `koin-compose`, `koin-compose-viewmodel`.
+- **Kotlinx Serialization**: JSON-based data parsing.
+- **Kotlinx Datetime**: Reliable cross-platform time handling.
+
+### UI & Navigation
+- **Compose Multiplatform**: `foundation`, `runtime`, `ui`, `material3`, `material-icons-extended`, `components-resources`.
+- **Navigation**: `navigation-compose`, `navigation-event-compose`.
+
+### Testing & Quality
+- **Unit Testing**: `kotlin-test`, `kotlinx-coroutines-test`.
+- **Mocking & DI Testing**: `koin-test`, `ktor-client-mock`.
+- **Async Testing**: `app.cash.turbine:turbine` (Unlocking reliable Flow assertions).
+- **JVM UI Testing**: `org.robolectric:robolectric`.
+- **Coverage**: `org.jetbrains.kotlinx.kover` (Refined filters for core logic).
+
+### Android Specifics
+- **androidx-activity-compose**
+- **androidx-lifecycle-runtime-compose**
+- **androidx-appcompat**
+- **androidx-core-ktx**
 
 ## 🌍 Environments & Build Variants
 
@@ -91,7 +120,7 @@ The project features a comprehensive test suite (Unit + UI) shared in `commonTes
 Thoroughly covers:
 - **Mappers**: Ensuring perfect data transformation.
 - **UseCases**: Validating business rules.
-- **Presenters/ViewModels**: Testing state transitions and event handling.
+- **Presenters/ViewModels**: Testing state transitions and event handling using **Turbine** to assert on reactive Flow emissions.
 
 ### 2. UI Tests (Compose Multiplatform)
 Shared UI tests verify the rendering of:
