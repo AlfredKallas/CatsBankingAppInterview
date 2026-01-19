@@ -1,7 +1,7 @@
 package com.example.catsbankingapp.presentation.accounts
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -13,19 +13,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,7 +34,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,10 +52,10 @@ fun AccountsScreen(modifier: Modifier = Modifier, navigateToAccountScreen: (Stri
     val viewModel = koinViewModel<AccountsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         viewModel.events.collect {
-            when(val event = it) {
-                is AccountsEvents.OnAccountClicked -> navigateToAccountScreen.invoke(event.accountId)
+            when (it) {
+                is AccountsEvents.OnAccountClicked -> navigateToAccountScreen.invoke(it.accountId)
                 is AccountsEvents.OnRetryClicked -> viewModel.getBanksList()
             }
         }
@@ -71,7 +70,19 @@ fun AccountsScreen(modifier: Modifier = Modifier, uiState: BanksListScreenUIStat
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
-        topBar = { CenterAlignedTopAppBar(title = { Text(uiState.screenTitle) }) }
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = uiState.screenTitle,
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+
+                    )
+                }
+            )
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier.padding(paddingValues)
@@ -106,12 +117,24 @@ fun AccountsScreenContent(
 @Composable
 fun BankAccountsSection(modifier: Modifier = Modifier, account: BankSectionUIModel) {
     Column(modifier = modifier) {
-        Text( modifier = Modifier.padding( horizontal = 8.dp), text = account.title)
+        Text(
+            modifier = Modifier.padding(top = 4.dp, bottom = 4.dp, start = 8.dp),
+            text = account.title,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.SemiBold
+            )
+        )
         LazyColumn {
-            items(account.banks) { bank ->
+            itemsIndexed(account.banks) { index, bank ->
                 BankAccountCard(
                     bank = bank
                 )
+                if (index < account.banks.lastIndex) {
+                    HorizontalDivider(
+                        modifier.fillMaxWidth()
+                            .padding(start = 8.dp)
+                    )
+                }
             }
         }
     }
@@ -125,67 +148,64 @@ private fun BankAccountCard(
 ) {
     // make sure the expanded value survive the configuration changes
     var expanded by rememberSaveable { mutableStateOf(expandedByDefault) }
-    val arrowRotation by animateFloatAsState(
-        targetValue = if (expanded) 180f else 0f,
-        label = "expandable-arrow"
-    )
-
-    Card(
-        modifier = modifier
-            .padding(4.dp)
-            .fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors()
+    // expandable header
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Column {
-            // expandable header
-            Surface(
-                modifier = Modifier
-                    .clickable { expanded = !expanded },
-                color = MaterialTheme.colorScheme.primary
+            Row(
+                Modifier.fillMaxWidth()
+                    .clickable { expanded = !expanded }
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Row(
-                        Modifier.fillMaxWidth()
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = bank.title,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Text(
-                            text = bank.totalAccountsBalances,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = bank.title,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = bank.totalAccountsBalances,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Crossfade(
+                    targetState = expanded,
+                    modifier = Modifier.padding(start = 20.dp),
+                    content = { expanded ->
+                        val arrow = if (expanded) {
+                            Icons.Filled.KeyboardArrowUp
+                        } else {
+                            Icons.Filled.KeyboardArrowDown
+                        }
                         Icon(
-                            modifier = Modifier
-                                .rotate(arrowRotation)
-                                .padding(horizontal = 20.dp),
-                            imageVector = Icons.Filled.KeyboardArrowDown,
+                            imageVector = arrow,
                             contentDescription = null
                         )
                     }
+                )
 
-                    // expandable contents
-                    AnimatedVisibility(
-                        visible = expanded,
-                        enter = expandVertically(
-                            expandFrom = Alignment.Top,
-                            animationSpec = tween()
-                        ),
-                        exit = shrinkVertically(
-                            shrinkTowards = Alignment.Top,
-                            animationSpec = tween()
-                        )
-                    ) {
-                        AccountsList(
-                            accountsList = bank.accounts
-                        )
-                    }
-                }
+            }
+
+            // expandable contents
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically(
+                    expandFrom = Alignment.Top,
+                    animationSpec = tween()
+                ),
+                exit = shrinkVertically(
+                    shrinkTowards = Alignment.Top,
+                    animationSpec = tween()
+                )
+            ) {
+                HorizontalDivider(
+                    modifier.fillMaxWidth()
+                        .padding(start = 8.dp)
+                )
+                AccountsList(
+                    accountsList = bank.accounts
+                )
             }
         }
     }
@@ -195,11 +215,18 @@ private fun BankAccountCard(
 fun AccountsList(
     accountsList: List<AccountUIModel>
 ) {
-    Column {
-        accountsList.forEach { account ->
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        accountsList.forEachIndexed { index, account ->
             AccountCard(
                 account = account
             )
+            if (index < accountsList.lastIndex) {
+                HorizontalDivider(
+                    Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
@@ -209,111 +236,116 @@ fun AccountCard(
     modifier: Modifier = Modifier,
     account: AccountUIModel
 ) {
-    Card(
-        modifier = modifier
-            .padding(4.dp)
-            .fillMaxWidth()
+    Row(
+        modifier.fillMaxWidth()
             .clickable {
                 account.onClick(account.title)
-            },
-        shape = MaterialTheme.shapes.medium
+            }
+            .padding(
+                start = 32.dp,
+                top = 16.dp,
+                bottom = 16.dp,
+                end = 16.dp
+            ),
     ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = account.title,
+            style = MaterialTheme.typography.titleMedium,
+            maxLines = 1,
+        )
         Row(
-            Modifier.fillMaxWidth()
-                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                modifier = Modifier.weight(1f),
-                text = account.title,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                text = account.accountBalance,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
             )
             Icon(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp),
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null
             )
         }
+
     }
 }
 
 @Preview
 @Composable
 fun AccountsScreenContentPreview() {
-        val banksList = BanksListScreenUIModel(
-            CABankSection = BankSectionUIModel(
-                title = "CA",
-                banks = listOf(
-                    BankUIModel(
-                        title = "CA America",
-                        accounts = listOf(
-                            AccountUIModel(
-                                title = "Checking",
-                                accountBalance = "$100.00",
-                                onClick = { }
-                            ),
-                            AccountUIModel(
-                                title = "Savings",
-                                accountBalance = "$200.00",
-                                onClick = { }
-                            )
+    val banksList = BanksListScreenUIModel(
+        CABankSection = BankSectionUIModel(
+            title = "CA",
+            banks = listOf(
+                BankUIModel(
+                    title = "CA America",
+                    accounts = listOf(
+                        AccountUIModel(
+                            title = "Checking",
+                            accountBalance = "$100.00",
+                            onClick = { }
                         ),
-                        totalAccountsBalances = "$300.00"
+                        AccountUIModel(
+                            title = "Savings",
+                            accountBalance = "$200.00",
+                            onClick = { }
+                        )
                     ),
-                    BankUIModel(
-                        title = "Wells Fargo",
-                        accounts = listOf(
-                            AccountUIModel(
-                                title = "Checking",
-                                accountBalance = "$10",
-                                onClick = {}
-                            ),
-                            AccountUIModel(
-                                title = "Savings",
-                                accountBalance = "$20",
-                                onClick = {}
-                            )
-                        ),
-                        totalAccountsBalances = "$30"
-                    )
+                    totalAccountsBalances = "$300.00"
                 ),
-            ),
-            otherBanksSection = BankSectionUIModel(
-                title = "Other Banks",
-                banks = listOf(
-                    BankUIModel(
-                        title = "Bank of America",
-                        accounts = listOf(
-                            AccountUIModel(
-                                title = "Checking",
-                                accountBalance = "$100.00",
-                                onClick = { }
-                            ),
-                            AccountUIModel(
-                                title = "Savings",
-                                accountBalance = "$200.00",
-                                onClick = { }
-                            )
+                BankUIModel(
+                    title = "Wells Fargo",
+                    accounts = listOf(
+                        AccountUIModel(
+                            title = "Checking",
+                            accountBalance = "$10",
+                            onClick = {}
                         ),
-                        totalAccountsBalances = "$300.00"
+                        AccountUIModel(
+                            title = "Savings",
+                            accountBalance = "$20",
+                            onClick = {}
+                        )
                     ),
+                    totalAccountsBalances = "$30"
                 )
+            ),
+        ),
+        otherBanksSection = BankSectionUIModel(
+            title = "Other Banks",
+            banks = listOf(
+                BankUIModel(
+                    title = "Bank of America",
+                    accounts = listOf(
+                        AccountUIModel(
+                            title = "Checking",
+                            accountBalance = "$100.00",
+                            onClick = { }
+                        ),
+                        AccountUIModel(
+                            title = "Savings",
+                            accountBalance = "$200.00",
+                            onClick = { }
+                        )
+                    ),
+                    totalAccountsBalances = "$300.00"
+                ),
             )
         )
-        val  uiState = BanksListScreenUIState.Success("mes Comptes", banksList)
-        MaterialTheme {
-            AccountsScreen(
-                uiState = uiState
-            )
-        }
+    )
+    val uiState = BanksListScreenUIState.Success("mes Comptes", banksList)
+    MaterialTheme {
+        AccountsScreen(
+            uiState = uiState
+        )
+    }
 }
 
 @Preview
 @Composable
 fun AccountsScreenLoadingPreview() {
-    val  uiState = BanksListScreenUIState.Loading("mes Comptes")
+    val uiState = BanksListScreenUIState.Loading("mes Comptes")
     MaterialTheme {
         AccountsScreen(
             uiState = uiState
@@ -324,7 +356,7 @@ fun AccountsScreenLoadingPreview() {
 @Preview
 @Composable
 fun AccountsScreenErrorPreview() {
-    val  uiState = BanksListScreenUIState.Error("mes Comptes", "An error occurred")
+    val uiState = BanksListScreenUIState.Error("mes Comptes", "An error occurred")
     MaterialTheme {
         AccountsScreen(
             uiState = uiState

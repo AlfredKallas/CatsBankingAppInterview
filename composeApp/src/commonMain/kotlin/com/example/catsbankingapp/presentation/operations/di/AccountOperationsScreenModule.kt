@@ -13,11 +13,17 @@ import org.koin.dsl.module
 val accountOperationsScreenModule = module {
 
     factory<OperationUiModelMapper> {
-        OperationUiModelMapperImpl(get())
+        OperationUiModelMapperImpl(
+            dateFormatter = get(),
+            currencyFormatter = get()
+        )
     }
 
     factory<AccountOperationsScreenModelMapper> {
-        AccountOperationsScreenModelMapperImpl(get())
+        AccountOperationsScreenModelMapperImpl(
+            operationUiModelMapper = get(),
+            currencyFormatter = get()
+        )
     }
 
     factory<OperationsListPresenter> {

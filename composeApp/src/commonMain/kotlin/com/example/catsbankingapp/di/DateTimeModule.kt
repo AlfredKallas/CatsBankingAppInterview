@@ -1,7 +1,7 @@
 package com.example.catsbankingapp.di
 
-import com.example.catsbankingapp.utils.DateTimeFormatter
-import com.example.catsbankingapp.utils.DateTimeFormatterImpl
+import com.example.catsbankingapp.utils.DateFormatter
+import com.example.catsbankingapp.utils.DateFormatterImpl
 import com.example.catsbankingapp.utils.DateTimeParser
 import com.example.catsbankingapp.utils.DateTimeParserImpl
 import kotlinx.datetime.TimeZone
@@ -12,8 +12,8 @@ val dateTimeModule = module {
         TimeZone.currentSystemDefault()
     }
 
-    factory <DateTimeFormatter> {
-        DateTimeFormatterImpl()
+    factory <DateFormatter> {
+        DateFormatterImpl()
     }
 
     factory<DateTimeParser> {

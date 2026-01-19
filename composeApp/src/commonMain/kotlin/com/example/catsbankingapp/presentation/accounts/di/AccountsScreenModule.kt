@@ -17,11 +17,11 @@ import org.koin.dsl.module
 val accountsScreenModule = module {
 
     factory<AccountsUIModelMapper> {
-        AccountsUIModelMapperImpl()
+        AccountsUIModelMapperImpl(get())
     }
 
     factory<BankUIModelMapper> {
-        BankUIModelMapperImpl(get())
+        BankUIModelMapperImpl(get(), get())
     }
 
     factory<BankSectionMapper> {

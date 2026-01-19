@@ -6,8 +6,8 @@ import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 
-actual class HttpClientFactory {
-    actual fun create(config: AppConfig, json: Json): HttpClient {
+class AndroidHttpClientFactory: HttpClientFactory {
+    override fun create(config: AppConfig, json: Json): HttpClient {
         return HttpClient(OkHttp) {
             engine {
                 config {
@@ -19,3 +19,5 @@ actual class HttpClientFactory {
         }
     }
 }
+
+actual fun buildHttpClientFactory(): HttpClientFactory = AndroidHttpClientFactory()

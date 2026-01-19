@@ -11,7 +11,7 @@ androidx-lifecycle = "2.9.6"
 androidx-testExt = "1.3.0"
 composeMultiplatform = "1.10.0"
 navigationCompose = "2.9.1"
-navigationEvent = "1.0.1"
+navigationEvent = "1.0.0"
 material3 = "1.9.0"
 material-icons-extended = "1.7.3"
 junit = "4.13.2"
@@ -49,7 +49,7 @@ koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
 
 #Navigation-Compose
 compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-compose-navigationEvent = { module = "androidx.navigationevent:navigationevent", version.ref = "navigationEvent" }
+compose-navigationEvent = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "navigationEvent" }
 
 #Ktor
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

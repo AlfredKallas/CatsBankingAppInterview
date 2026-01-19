@@ -7,9 +7,7 @@ import kotlinx.coroutines.launch
 class AccountsViewModel(private val presenter: AccountsPresenter) : ViewModel() {
 
     init {
-        viewModelScope.launch {
-            getBanksList()
-        }
+        getBanksList()
     }
 
     fun getBanksList() {

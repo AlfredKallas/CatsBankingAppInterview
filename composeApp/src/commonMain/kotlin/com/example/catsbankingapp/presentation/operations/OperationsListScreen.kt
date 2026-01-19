@@ -8,19 +8,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardBackspace
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.example.catsbankingapp.presentation.error.ErrorScreen
 import com.example.catsbankingapp.presentation.loading.LoadingScreen
 import com.example.catsbankingapp.presentation.operations.models.AccountOperationsScreenModel
@@ -40,27 +42,23 @@ import org.koin.compose.viewmodel.koinViewModel
 fun OperationsListScreen(modifier: Modifier = Modifier, onBackNavigation: () -> Unit = {}) {
     val viewModel = koinViewModel<OperationsListViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-//    val navigationEvenState = rememberNavigationEventState<NavigationEventInfo>(
-//        currentInfo = NavigationEventInfo.None,
-//    )
-//    NavigationEventInfo
-//    NavigationBackHandler(
-//        state = navState,
-//        isBackEnabled = true,
-//        onBackCancelled = {
-//            // Process the canceled back gesture
-//        },
-//        onBackCompleted = {
-//            // Process the completed back gesture
-//        }
-//    )
-//    LaunchedEffect(navState.transitionState) {
-//        val transitionState = navState.transitionState
-//        if (transitionState is NavigationEventTransitionState.InProgress) {
-//            val progress = transitionState.latestEvent.progress
-//            // Animate the back gesture progress
-//        }
-//    }
+    val navigationEvenState = rememberNavigationEventState<NavigationEventInfo>(
+        currentInfo = NavigationEventInfo.None,
+    )
+    val onComposedBackNavigation: () -> Unit = {
+        onBackNavigation.invoke()
+    }
+
+    NavigationBackHandler(
+        state = navigationEvenState,
+        isBackEnabled = true,
+        onBackCancelled = {
+            // Process the canceled back gesture
+        },
+        onBackCompleted = {
+            onComposedBackNavigation.invoke()
+        }
+    )
     LaunchedEffect(Unit){
         viewModel.events.collect {
             when(it) {
@@ -68,7 +66,9 @@ fun OperationsListScreen(modifier: Modifier = Modifier, onBackNavigation: () -> 
             }
         }
     }
-    OperationsListScreen(modifier, uiState)
+    OperationsListScreen(modifier, uiState,
+        onBackNavigation = onComposedBackNavigation
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,7 +129,7 @@ fun AccountOperationsScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 8.dp)
-                .weight(0.2f),
+                .weight(0.15f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -137,19 +137,25 @@ fun AccountOperationsScreenContent(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = accountOperationsScreenModel.accountTitle,
-                    style = MaterialTheme.typography.titleLarge
+                    text = accountOperationsScreenModel.totalBalance,
+                    style = MaterialTheme.typography.headlineLarge
                 )
             }
             Text(
-                text = accountOperationsScreenModel.totalBalance,
-                style = MaterialTheme.typography.titleMedium
+                text = accountOperationsScreenModel.accountTitle,
+                style = MaterialTheme.typography.titleLarge
             )
         }
         LazyColumn(modifier = Modifier.fillMaxSize()
             .weight(0.8f)) {
-            items(accountOperationsScreenModel.operations) { operation ->
+            itemsIndexed(accountOperationsScreenModel.operations) { index, operation ->
                 AccountOperationCard(operation = operation)
+                if (index < accountOperationsScreenModel.operations.lastIndex) {
+                    HorizontalDivider(
+                        modifier.fillMaxWidth()
+                            .padding(start = 8.dp)
+                    )
+                }
             }
         }
     }
@@ -160,36 +166,29 @@ fun AccountOperationCard(
     modifier: Modifier = Modifier,
     operation: OperationUIModel
 ) {
-    Card(
-        modifier = modifier
-            .padding(4.dp)
-            .fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = contentColorFor(MaterialTheme.colorScheme.primary),
-        )
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Row(
             Modifier.fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
+                .padding(horizontal = 32.dp)
+                .padding(vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
-            ) {
+        ) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = operation.title,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSecondary,
                 )
                 Text(
                     text = operation.date.orEmpty(),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSecondary,
                 )
             }
             Text(
@@ -206,7 +205,7 @@ fun AccountOperationCard(
 fun AccountOperationsScreenContentPreview() {
         val accountOperationScreenModel = AccountOperationsScreenModel(
             accountTitle = "Compte 1",
-            totalBalance = "1000.00",
+            totalBalance = "1000.00 €",
             operations = listOf(
                 OperationUIModel(
                     title = "Opération 1",

@@ -1,8 +1,8 @@
 package com.example.catsbankingapp.di
 
 import com.example.catsbankingapp.core.network.AppConfig
-import com.example.catsbankingapp.core.network.HttpClientFactory
 import com.example.catsbankingapp.core.network.NetworkClient
+import com.example.catsbankingapp.core.network.buildHttpClientFactory
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -23,7 +23,7 @@ fun networkModule(appConfig: AppConfig) = module {
     }
     // 3. Provide HttpClient
     single<HttpClient> {
-        HttpClientFactory().create(get(), get())
+        buildHttpClientFactory().create(get(), get())
     }
 
     single {

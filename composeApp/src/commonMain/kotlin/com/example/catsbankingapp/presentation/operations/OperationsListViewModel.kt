@@ -21,6 +21,12 @@ class OperationsListViewModel(
 
     init {
         getAccountOperationsList()
+        println(" OperationsListViewModel -- init")
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        println(" OperationsListViewModel -- onCleared")
     }
 
     fun getAccountOperationsList(){

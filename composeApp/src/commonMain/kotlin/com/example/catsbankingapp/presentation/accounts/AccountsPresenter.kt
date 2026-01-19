@@ -5,6 +5,7 @@ import catsbankingapp.composeapp.generated.resources.Res
 import com.example.catsbankingapp.domain.GetBanksListUseCase
 import com.example.catsbankingapp.presentation.accounts.mappers.BanksListScreenMapper
 import com.example.catsbankingapp.presentation.accounts.models.BanksListScreenUIModel
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -39,14 +40,15 @@ sealed class AccountsEvents {
 
 class AccountsPresenterImpl(
     private val getBanksListUseCase: GetBanksListUseCase,
-    private val banksListScreenMapper: BanksListScreenMapper
+    private val banksListScreenMapper: BanksListScreenMapper,
 ): AccountsPresenter, AccountsPresenterActions {
 
     private val _uiState = MutableStateFlow<BanksListScreenUIState>(BanksListScreenUIState.Loading("Mes Comptes"))
     override val uiState: StateFlow<BanksListScreenUIState> = _uiState.asStateFlow()
 
     private val _events = MutableSharedFlow<AccountsEvents>(
-        replay = 1,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_LATEST
     )
     override val events: SharedFlow<AccountsEvents> = _events
 

@@ -16,9 +16,11 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 // 1. The Expect declaration
-expect class HttpClientFactory() {
+interface HttpClientFactory {
     fun create(config: AppConfig, json: Json): HttpClient
 }
+
+expect fun buildHttpClientFactory(): HttpClientFactory
 
 private const val CALL_REQUEST_TIMOUT: Long = 20_000
 private const val CALL_CONNECTION_TIMOUT: Long = 20_000
