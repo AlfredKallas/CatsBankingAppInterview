@@ -48,8 +48,6 @@ The project leverages **Koin** for lightweight and idiomatic dependency injectio
 - **Testable**: Koin allows for easy swapping of real implementations with mocks (e.g., `FakeAccountsPresenter`) during unit and UI testing.
 - **Lifecycle Awareness**: ViewModels are injected using `koin-compose-viewmodel`, ensuring they follow the platform's lifecycle (especially on Android).
 
-- **Lifecycle Awareness**: ViewModels are injected using `koin-compose-viewmodel`, ensuring they follow the platform's lifecycle (especially on Android).
-
 ## 🚦 UI State Management & UX
 
 The app uses a robust **State Machine** to manage the user experience across all screens:
@@ -111,6 +109,18 @@ Shared UI tests verify the rendering of:
 
 > [!IMPORTANT]
 > **Android Instrumented Tests**: Avoid running `./gradlew connectedDevDebugAndroidTest` on an emulator. There is a known conflict between the Robolectric shadowing framework (used for high-speed JVM UI testing) and the real Android environment. Use the JVM task for 100% verification on Android.
+
+## 📱 iOS Orientation Troubleshooting
+
+If the iOS app appears locked in Portrait mode:
+1. **Standardized Settings**: I've enabled `GENERATE_INFOPLIST_FILE` across all build configurations to ensure consistent behavior.
+2. **Double-Checked Plist**: Orientation keys are explicitly added to `iosApp/Info.plist` as a secondary safeguard.
+3. **CRITICAL: Clean Build**: iOS configuration can be extremely sticky. If rotation still fails:
+    - **Delete the app** from the iOS Simulator.
+    - Run `Build > Clean Project` in Android Studio.
+    - Run the app again.
+
+*Note: This is not a "known issue" in KMP itself; KMP-Compose supports rotation natively. It is a common configuration hurdle where Xcode's build settings and the physical `Info.plist` must be perfectly synchronized.*
 
 ## 📊 Test Coverage (Kover)
 
