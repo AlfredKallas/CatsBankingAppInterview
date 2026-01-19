@@ -14,11 +14,15 @@ import catsbankingapp.composeapp.generated.resources.Error_Screen_Retry_Btn_Titl
 import catsbankingapp.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 @Composable
 fun ErrorScreen(title: String = stringResource(Res.string.Error_Screen_Retry_Btn_Title), message: String, onRetry: () -> Unit = {}) {
     Column(
         modifier = Modifier.fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

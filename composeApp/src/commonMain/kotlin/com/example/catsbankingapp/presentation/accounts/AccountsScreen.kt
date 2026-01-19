@@ -104,37 +104,44 @@ fun AccountsScreenContent(
     modifier: Modifier = Modifier,
     banksList: BanksListScreenUIModel
 ) {
-    Column(modifier = modifier) {
-        BankAccountsSection(
-            account = banksList.CABankSection
-        )
-        BankAccountsSection(
-            account = banksList.otherBanksSection
-        )
-    }
-}
-
-@Composable
-fun BankAccountsSection(modifier: Modifier = Modifier, account: BankSectionUIModel) {
-    Column(modifier = modifier) {
-        Text(
-            modifier = Modifier.padding(top = 4.dp, bottom = 4.dp, start = 8.dp),
-            text = account.title,
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.SemiBold
-            )
-        )
-        LazyColumn {
-            itemsIndexed(account.banks) { index, bank ->
-                BankAccountCard(
-                    bank = bank
+    LazyColumn(
+        modifier = modifier.fillMaxSize()
+    ) {
+        // CA Bank Section
+        item {
+            Text(
+                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp, start = 8.dp),
+                text = banksList.CABankSection.title,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.SemiBold
                 )
-                if (index < account.banks.lastIndex) {
-                    HorizontalDivider(
-                        modifier.fillMaxWidth()
-                            .padding(start = 8.dp)
-                    )
-                }
+            )
+        }
+        itemsIndexed(banksList.CABankSection.banks) { index, bank ->
+            BankAccountCard(bank = bank)
+            if (index < banksList.CABankSection.banks.lastIndex) {
+                HorizontalDivider(
+                    Modifier.fillMaxWidth().padding(start = 8.dp)
+                )
+            }
+        }
+
+        // Other Banks Section
+        item {
+            Text(
+                modifier = Modifier.padding(top = 24.dp, bottom = 4.dp, start = 8.dp),
+                text = banksList.otherBanksSection.title,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.SemiBold
+                )
+            )
+        }
+        itemsIndexed(banksList.otherBanksSection.banks) { index, bank ->
+            BankAccountCard(bank = bank)
+            if (index < banksList.otherBanksSection.banks.lastIndex) {
+                HorizontalDivider(
+                    Modifier.fillMaxWidth().padding(start = 8.dp)
+                )
             }
         }
     }

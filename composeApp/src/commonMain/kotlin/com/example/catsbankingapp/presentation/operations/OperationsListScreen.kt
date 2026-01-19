@@ -52,9 +52,6 @@ fun OperationsListScreen(modifier: Modifier = Modifier, onBackNavigation: () -> 
     NavigationBackHandler(
         state = navigationEvenState,
         isBackEnabled = true,
-        onBackCancelled = {
-            // Process the canceled back gesture
-        },
         onBackCompleted = {
             onComposedBackNavigation.invoke()
         }
@@ -122,40 +119,34 @@ fun AccountOperationsScreenContent(
     modifier: Modifier = Modifier,
     accountOperationsScreenModel: AccountOperationsScreenModel
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 8.dp)
-                .weight(0.15f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.weight(1f)
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 8.dp)
+                    .padding(vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = accountOperationsScreenModel.totalBalance,
                     style = MaterialTheme.typography.headlineLarge
                 )
+                Text(
+                    text = accountOperationsScreenModel.accountTitle,
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
-            Text(
-                text = accountOperationsScreenModel.accountTitle,
-                style = MaterialTheme.typography.titleLarge
-            )
         }
-        LazyColumn(modifier = Modifier.fillMaxSize()
-            .weight(0.8f)) {
-            itemsIndexed(accountOperationsScreenModel.operations) { index, operation ->
-                AccountOperationCard(operation = operation)
-                if (index < accountOperationsScreenModel.operations.lastIndex) {
-                    HorizontalDivider(
-                        modifier.fillMaxWidth()
-                            .padding(start = 8.dp)
-                    )
-                }
+        itemsIndexed(accountOperationsScreenModel.operations) { index, operation ->
+            AccountOperationCard(operation = operation)
+            if (index < accountOperationsScreenModel.operations.lastIndex) {
+                HorizontalDivider(
+                    modifier.fillMaxWidth()
+                        .padding(start = 8.dp)
+                )
             }
         }
     }
