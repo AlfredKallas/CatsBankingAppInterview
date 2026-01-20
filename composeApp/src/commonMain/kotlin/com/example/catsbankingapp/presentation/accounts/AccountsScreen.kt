@@ -27,7 +27,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,29 +43,33 @@ import com.example.catsbankingapp.presentation.accounts.models.BankUIModel
 import com.example.catsbankingapp.presentation.accounts.models.BanksListScreenUIModel
 import com.example.catsbankingapp.presentation.error.ErrorScreen
 import com.example.catsbankingapp.presentation.loading.LoadingScreen
+import com.example.catsbankingapp.utils.ObserveLifecycleAwareEvents
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountsScreen(modifier: Modifier = Modifier, navigateToAccountScreen: (String) -> Unit = {}) {
+fun AccountsScreen(
+    modifier: Modifier = Modifier,
+    navigateToAccountScreen: (String) -> Unit = {}
+) {
     val viewModel = koinViewModel<AccountsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.events.collect {
-            when (it) {
-                is AccountsEvents.OnAccountClicked -> navigateToAccountScreen.invoke(it.accountId)
-                is AccountsEvents.OnRetryClicked -> viewModel.getBanksList()
-            }
+    viewModel.events.ObserveLifecycleAwareEvents {
+        when (it) {
+            is AccountsEvents.OnAccountClicked -> navigateToAccountScreen.invoke(it.accountId)
+            is AccountsEvents.OnRetryClicked -> viewModel.getBanksList()
         }
     }
-
     AccountsScreen(modifier, uiState)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountsScreen(modifier: Modifier = Modifier, uiState: BanksListScreenUIState) {
+fun AccountsScreen(
+    modifier: Modifier = Modifier,
+    uiState: BanksListScreenUIState
+) {
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -117,7 +120,10 @@ fun AccountsScreenContent(
                 )
             )
         }
-        itemsIndexed(banksList.CABankSection.banks) { index, bank ->
+        itemsIndexed(
+            items = banksList.CABankSection.banks,
+            key = { _, bank -> bank.title }
+        ) { index, bank ->
             BankAccountCard(bank = bank)
             if (index < banksList.CABankSection.banks.lastIndex) {
                 HorizontalDivider(
@@ -210,32 +216,23 @@ private fun BankAccountCard(
                     modifier.fillMaxWidth()
                         .padding(start = 8.dp)
                 )
-                AccountsList(
-                    accountsList = bank.accounts
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AccountsList(
-    accountsList: List<AccountUIModel>
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        accountsList.forEachIndexed { index, account ->
-            AccountCard(
-                account = account
-            )
-            if (index < accountsList.lastIndex) {
-                HorizontalDivider(
-                    Modifier.fillMaxWidth()
-                        .padding(
-                            start = 32.dp
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    bank.accounts.forEachIndexed { index, account ->
+                        AccountCard(
+                            account = account
                         )
-                )
+                        if (index < bank.accounts.lastIndex) {
+                            HorizontalDivider(
+                                Modifier.fillMaxWidth()
+                                    .padding(
+                                        start = 32.dp
+                                    )
+                            )
+                        }
+                    }
+                }
             }
         }
     }

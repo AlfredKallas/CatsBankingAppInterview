@@ -17,6 +17,7 @@ class OperationUiModelMapperImpl(
 ): OperationUiModelMapper {
     override fun toUIModel(operation: Operation): OperationUIModel =
         OperationUIModel(
+            id = operation.id.orEmpty(),
             title = operation.title.orEmpty(),
             date = operation.date?.let { dateFormatter.format(it) },
             balance = currencyFormatter.format(operation.amount)

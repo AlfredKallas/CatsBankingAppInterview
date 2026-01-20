@@ -1,5 +1,6 @@
 package com.example.catsbankingapp.presentation.operations
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,7 +17,14 @@ class FakeOperationsListPresenter : OperationsListPresenter {
     
     var lastAccountIdRequested: String? = null
 
-    override suspend fun getAccountOperationsList(accountId: String) {
+    override fun getAccountOperationsList(accountId: String) {
         lastAccountIdRequested = accountId
+    }
+}
+
+class FakeOperationsListPresenterFactory : OperationsListPresenterFactory {
+    val fakePresenter = FakeOperationsListPresenter()
+    override fun create(coroutineScope: CoroutineScope): OperationsListPresenter {
+        return FakeOperationsListPresenter()
     }
 }

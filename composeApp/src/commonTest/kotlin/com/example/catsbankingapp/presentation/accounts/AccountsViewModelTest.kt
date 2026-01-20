@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.setMain
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
@@ -19,18 +20,23 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-    class AccountsViewModelTest : KoinTest {
+class AccountsViewModelTest : KoinTest {
 
     private val viewModel: AccountsViewModel by inject()
-    private val fakePresenter: FakeAccountsPresenter by inject()
+    private val fakeFactory = FakeAccountsPresenterFactory()
+
+
+    val fakePresenter by lazy {
+        fakeFactory.fakePresenter
+    }
+
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         startKoin {
             modules(module {
-                single { FakeAccountsPresenter() }
-                single<AccountsPresenter> { get<FakeAccountsPresenter>() }
+                single<AccountsPresenterFactory> { fakeFactory }
                 singleOf(::AccountsViewModel)
             })
         }
@@ -46,7 +52,7 @@ import kotlin.test.assertTrue
     fun init_calls_getBanksList_on_presenter() = runTest {
         // Accessing viewModel triggers init
         val vm = viewModel
-        
+
         // Assert
         advanceUntilIdle()
         assertTrue(fakePresenter.getBanksUIListCalled)

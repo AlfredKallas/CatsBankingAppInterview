@@ -17,15 +17,20 @@ import kotlin.test.Test
 @OptIn(ExperimentalTestApi::class)
 class OperationsListScreenTest: RobolectricTest() {
 
-    private val fakePresenter = FakeOperationsListPresenter()
+    private val fakePresenterFactory = FakeOperationsListPresenterFactory()
+    private val fakePresenter by lazy {
+        fakePresenterFactory.fakePresenter
+    }
+
 
     @BeforeTest
     fun setup() {
         stopKoin()
         startKoin {
             modules(module {
-                single<OperationsListPresenter> { fakePresenter }
+                single<OperationsListPresenterFactory> { fakePresenterFactory }
                 single<NavArgsProvider> { FakeNavArgsProvider(accountId = "123") }
+
                 single { OperationsListViewModel(get(), get()) }
             })
         }

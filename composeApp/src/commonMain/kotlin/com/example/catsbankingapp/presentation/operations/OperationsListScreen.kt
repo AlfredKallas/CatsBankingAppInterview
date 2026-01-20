@@ -21,7 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,11 +34,15 @@ import com.example.catsbankingapp.presentation.error.ErrorScreen
 import com.example.catsbankingapp.presentation.loading.LoadingScreen
 import com.example.catsbankingapp.presentation.operations.models.AccountOperationsScreenModel
 import com.example.catsbankingapp.presentation.operations.models.OperationUIModel
+import com.example.catsbankingapp.utils.ObserveLifecycleAwareEvents
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OperationsListScreen(modifier: Modifier = Modifier, onBackNavigation: () -> Unit = {}) {
+fun OperationsListScreen(
+    modifier: Modifier = Modifier,
+    onBackNavigation: () -> Unit = {}
+) {
     val viewModel = koinViewModel<OperationsListViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navigationEvenState = rememberNavigationEventState<NavigationEventInfo>(
@@ -56,13 +59,13 @@ fun OperationsListScreen(modifier: Modifier = Modifier, onBackNavigation: () -> 
             onComposedBackNavigation.invoke()
         }
     )
-    LaunchedEffect(Unit){
-        viewModel.events.collect {
-            when(it) {
-                is OperationsListEvents.OnRetryClicked -> viewModel.getAccountOperationsList()
-            }
+
+    viewModel.events.ObserveLifecycleAwareEvents {
+        when(it) {
+            is OperationsListEvents.OnRetryClicked -> viewModel.getAccountOperationsList()
         }
     }
+
     OperationsListScreen(modifier, uiState,
         onBackNavigation = onComposedBackNavigation
     )
@@ -140,7 +143,10 @@ fun AccountOperationsScreenContent(
                 )
             }
         }
-        itemsIndexed(accountOperationsScreenModel.operations) { index, operation ->
+        itemsIndexed(
+            items = accountOperationsScreenModel.operations,
+            key = { _, operation -> operation.id }
+        ) { index, operation ->
             AccountOperationCard(operation = operation)
             if (index < accountOperationsScreenModel.operations.lastIndex) {
                 HorizontalDivider(
@@ -199,11 +205,13 @@ fun AccountOperationsScreenContentPreview() {
             totalBalance = "1000.00 €",
             operations = listOf(
                 OperationUIModel(
+                    id = "ID1",
                     title = "Opération 1",
                     date = "12/01/2023",
                     balance = "100.00"
                 ),
                 OperationUIModel(
+                    id = "ID2",
                     title = "Opération 2",
                     date = "13/01/2023",
                     balance = "200.00"

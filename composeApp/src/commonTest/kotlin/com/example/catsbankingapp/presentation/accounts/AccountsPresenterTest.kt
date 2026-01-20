@@ -1,5 +1,6 @@
 package com.example.catsbankingapp.presentation.accounts
 
+import app.cash.turbine.test
 import com.example.catsbankingapp.data.BanksListRepository
 import com.example.catsbankingapp.data.FakeBanksListRepository
 import com.example.catsbankingapp.domain.GetBanksListUseCase
@@ -14,10 +15,11 @@ import com.example.catsbankingapp.presentation.accounts.mappers.FakeBanksListScr
 import com.example.catsbankingapp.utils.DateTimeParser
 import com.example.catsbankingapp.utils.DateTimeParserImpl
 import com.example.catsbankingapp.utils.FakeStringProvider
-import app.cash.turbine.test
 import com.example.catsbankingapp.utils.StringProvider
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 import org.koin.core.context.startKoin
@@ -35,7 +37,7 @@ import kotlin.test.assertTrue
 
 class AccountsPresenterTest : KoinTest {
 
-    private val presenter: AccountsPresenter by inject()
+    private val presenterFactory: AccountsPresenterFactory by inject()
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -53,7 +55,7 @@ class AccountsPresenterTest : KoinTest {
                 single { FakeStringProvider() }
                 single<StringProvider> { get<FakeStringProvider>() }
                 singleOf(::FakeBanksListScreenMapper) { bind<BanksListScreenMapper>() }
-                singleOf(::AccountsPresenterImpl) { bind<AccountsPresenter>() }
+                singleOf(::AccountsPresenterFactoryImpl) { bind<AccountsPresenterFactory>() }
             })
         }
     }
@@ -67,7 +69,7 @@ class AccountsPresenterTest : KoinTest {
     @Test
     fun getBanksUIList_updates_state_to_Success() = runTest(testDispatcher) {
         // Arrange
-        
+        val presenter: AccountsPresenter = presenterFactory.create(this)
         // Act & Assert
         presenter.uiState.test {
             // Initial state (Loading)

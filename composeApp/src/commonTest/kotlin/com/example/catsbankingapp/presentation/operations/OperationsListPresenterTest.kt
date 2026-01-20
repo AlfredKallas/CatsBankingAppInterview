@@ -34,11 +34,14 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 import app.cash.turbine.test
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.TestScope
 
 class OperationsListPresenterTest : KoinTest {
 
-    private val presenter: OperationsListPresenter by inject()
     private val fakeRepo: FakeBanksListRepository by inject()
+
+    private val presenterFactory: OperationsListPresenterFactory by inject()
 
     @BeforeTest
     fun setup() {
@@ -56,8 +59,8 @@ class OperationsListPresenterTest : KoinTest {
                 single { FakeBanksListRepository() }
                 single<BanksListRepository> { get<FakeBanksListRepository>() }
                 singleOf(::GetAccountOperationsListUseCase)
-                
-                singleOf(::OperationsListPresenterImpl) { bind<OperationsListPresenter>() }
+
+                singleOf(::OperationsListPresenterFactoryImpl) { bind<OperationsListPresenterFactory>() }
             })
         }
     }
@@ -73,6 +76,7 @@ class OperationsListPresenterTest : KoinTest {
         val accountId = "123"
         val bankModel = BankModel(accounts = arrayListOf(AccountModel(id = accountId)))
         fakeRepo.banksListResult = Result.success(listOf(bankModel))
+        val presenter: OperationsListPresenter = presenterFactory.create(this)
 
         // Act & Assert
         presenter.uiState.test {

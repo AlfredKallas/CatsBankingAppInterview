@@ -1,7 +1,7 @@
 package com.example.catsbankingapp.presentation.operations.di
 
-import com.example.catsbankingapp.presentation.operations.OperationsListPresenter
-import com.example.catsbankingapp.presentation.operations.OperationsListPresenterImpl
+import com.example.catsbankingapp.presentation.operations.OperationsListPresenterFactory
+import com.example.catsbankingapp.presentation.operations.OperationsListPresenterFactoryImpl
 import com.example.catsbankingapp.presentation.operations.OperationsListViewModel
 import com.example.catsbankingapp.presentation.operations.mappers.AccountOperationsScreenModelMapper
 import com.example.catsbankingapp.presentation.operations.mappers.AccountOperationsScreenModelMapperImpl
@@ -28,8 +28,8 @@ val accountOperationsScreenModule = module {
         )
     }
 
-    factory<OperationsListPresenter> {
-        OperationsListPresenterImpl(get(), get())
+    factory<OperationsListPresenterFactory> {
+        OperationsListPresenterFactoryImpl(get(), get())
     }
 
     viewModelOf(::OperationsListViewModel)

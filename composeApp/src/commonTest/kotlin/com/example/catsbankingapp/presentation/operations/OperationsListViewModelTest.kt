@@ -7,6 +7,7 @@ import com.example.catsbankingapp.utils.NavArgsProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -38,8 +39,8 @@ class OperationsListViewModelTest : KoinTest {
 
     }
 
-    private val fakePresenter = FakeOperationsListPresenter()
-    
+    private val fakePresenterFactory = FakeOperationsListPresenterFactory()
+
     // Manual setup for SavedStateHandle is easier than Koin injection for this specific parameter
     private lateinit var viewModel: OperationsListViewModel
 
@@ -47,7 +48,7 @@ class OperationsListViewModelTest : KoinTest {
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
 
-        viewModel = OperationsListViewModel(fakePresenter, fakeNavArgsProvider)
+        viewModel = OperationsListViewModel(fakePresenterFactory, fakeNavArgsProvider)
     }
 
     @AfterTest
@@ -60,6 +61,6 @@ class OperationsListViewModelTest : KoinTest {
         // Init happens in BeforeTest
         
         // Assert
-        assertEquals("123", fakePresenter.lastAccountIdRequested)
+        assertEquals("123", fakePresenterFactory.fakePresenter.lastAccountIdRequested)
     }
 }

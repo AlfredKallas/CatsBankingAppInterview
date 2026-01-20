@@ -6,11 +6,12 @@ import com.example.catsbankingapp.domain.GetBanksListUseCase
 import com.example.catsbankingapp.presentation.accounts.mappers.BanksListScreenMapper
 import com.example.catsbankingapp.presentation.accounts.models.BanksListScreenUIModel
 import com.example.catsbankingapp.utils.StringProvider
-import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 sealed class BanksListScreenUIState(val screenTitle: String) {
     data class Loading(val title: String) : BanksListScreenUIState(title)
@@ -22,9 +23,9 @@ interface AccountsPresenter {
 
     val uiState: Flow<BanksListScreenUIState>
 
-    val events: SharedFlow<AccountsEvents>
+    val events: Flow<AccountsEvents>
 
-    suspend fun getBanksUIList()
+    fun getBanksUIList()
 }
 
 interface AccountsPresenterActions {
@@ -38,6 +39,7 @@ sealed class AccountsEvents {
 }
 
 class AccountsPresenterImpl(
+    private val coroutineScope: CoroutineScope,
     private val getBanksListUseCase: GetBanksListUseCase,
     private val banksListScreenMapper: BanksListScreenMapper,
     private val stringProvider: StringProvider
@@ -46,38 +48,43 @@ class AccountsPresenterImpl(
     private val _uiState = MutableStateFlow<BanksListScreenUIState>(BanksListScreenUIState.Loading(""))
     override val uiState: Flow<BanksListScreenUIState> = _uiState
 
-    private val _events = MutableSharedFlow<AccountsEvents>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_LATEST
+    private val _events = Channel<AccountsEvents>(
+        capacity = Channel.BUFFERED
     )
-    override val events: SharedFlow<AccountsEvents> = _events
+    override val events: Flow<AccountsEvents> = _events.receiveAsFlow()
 
-    override suspend fun getBanksUIList() {
-        val title = stringProvider.getString(Res.string.Accounts_List_Screen_Title)
-        _uiState.value = BanksListScreenUIState.Loading(title)
-        getBanksListUseCase.getBanksList().collect { result ->
-            result.onSuccess { banksList ->
-                _uiState.value = BanksListScreenUIState.Success(
-                    title = title,
-                    banksList = banksListScreenMapper.mapToUIModel(
-                        banksList,
-                        this@AccountsPresenterImpl
+    override fun getBanksUIList() {
+        coroutineScope.launch {
+            val title = stringProvider.getString(Res.string.Accounts_List_Screen_Title)
+            _uiState.value = BanksListScreenUIState.Loading(title)
+            getBanksListUseCase.getBanksList().collect { result ->
+                result.onSuccess { banksList ->
+                    _uiState.value = BanksListScreenUIState.Success(
+                        title = title,
+                        banksList = banksListScreenMapper.mapToUIModel(
+                            banksList,
+                            this@AccountsPresenterImpl
+                        )
                     )
-                )
-            }.onFailure {
-                _uiState.value = BanksListScreenUIState.Error(
-                    title = title,
-                    message = it.message.orEmpty(),
-                    onRetry = { onRetryClicked() }
-                )
+                }.onFailure {
+                    _uiState.value = BanksListScreenUIState.Error(
+                        title = title,
+                        message = it.message.orEmpty(),
+                        onRetry = { onRetryClicked() }
+                    )
+                }
             }
         }
     }
 
     override fun onRetryClicked() {
-        _events.tryEmit(AccountsEvents.OnRetryClicked)
+        coroutineScope.launch {
+            _events.send(AccountsEvents.OnRetryClicked)
+        }
     }
     override fun onAccountClicked(accountId: String) {
-        _events.tryEmit(AccountsEvents.OnAccountClicked(accountId))
+        coroutineScope.launch {
+            _events.send(AccountsEvents.OnAccountClicked(accountId))
+        }
     }
 }

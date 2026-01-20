@@ -17,14 +17,16 @@ import kotlin.test.Test
 @OptIn(ExperimentalTestApi::class)
 class AccountsScreenTest: RobolectricTest(), KoinTest {
 
-    private val fakePresenter = FakeAccountsPresenter()
+    private val fakeAccountsPresenterFactory = FakeAccountsPresenterFactory()
+    private val fakePresenter = fakeAccountsPresenterFactory.fakePresenter
+
 
     @BeforeTest
     fun setup() {
         stopKoin()
         startKoin {
             modules(module {
-                single<AccountsPresenter> { fakePresenter }
+                single<AccountsPresenterFactory> { fakeAccountsPresenterFactory }
                 single { AccountsViewModel(get()) }
             })
         }

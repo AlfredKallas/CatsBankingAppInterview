@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 
 interface LocalBanksListDataSource {
-    suspend fun getBanksList(): Flow<Result<List<BankModel>>>
+    fun getBanksList(): Flow<Result<List<BankModel>>>
     fun saveBanksList(banksList: List<BankModel>)
 }
 
 class LocalBanksListDataSourceImpl : LocalBanksListDataSource {
     private var localBanksList :List<BankModel> = emptyList()
-    override suspend fun getBanksList(): Flow<Result<List<BankModel>>> {
+    override fun getBanksList(): Flow<Result<List<BankModel>>> {
         return flow {
             if (localBanksList.isNotEmpty()) {
                 emit(Result.success(localBanksList))

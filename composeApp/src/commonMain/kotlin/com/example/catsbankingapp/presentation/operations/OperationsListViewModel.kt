@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import kotlin.reflect.typeOf
 
 class OperationsListViewModel(
-    private val operationsListPresenter: OperationsListPresenter,
+    operationsListPresenterFactory: OperationsListPresenterFactory,
     navArgsProvider: NavArgsProvider
 ): ViewModel() {
 
@@ -18,6 +18,8 @@ class OperationsListViewModel(
         typeMap = mapOf(
             typeOf<String>() to NavType.StringType
         ))
+
+    private val operationsListPresenter = operationsListPresenterFactory.create(viewModelScope)
 
     val uiState = operationsListPresenter.uiState.stateIn(
         scope = viewModelScope,

@@ -10,7 +10,7 @@ class GetBanksListUseCase(
     private val banksListRepository: BanksListRepository,
     private val bankMapper: BankMapper
 ) {
-    suspend fun getBanksList(): Flow<Result<BanksList>> {
+    fun getBanksList(): Flow<Result<BanksList>> {
         return banksListRepository.getBanksList()
             .mapOnSuccess { banks ->
                 val (caBanks, otherBanks) = banks.partition { it.isCA }

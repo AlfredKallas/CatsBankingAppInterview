@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flow
 class FakeLocalBanksListDataSource : LocalBanksListDataSource {
     var localBanks: List<BankModel>? = null
 
-    override suspend fun getBanksList(): Flow<Result<List<BankModel>>> = flow {
+    override fun getBanksList(): Flow<Result<List<BankModel>>> = flow {
         if (localBanks != null) {
             emit(Result.success(localBanks!!))
         } else {

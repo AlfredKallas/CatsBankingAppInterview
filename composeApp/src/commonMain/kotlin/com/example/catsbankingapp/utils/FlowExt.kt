@@ -1,5 +1,11 @@
 package com.example.catsbankingapp.utils
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.catsbankingapp.core.CatsBankingException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -39,3 +45,15 @@ fun <T, R> Flow<Result<T>>.mapResultOnSuccess(block: (T) -> Result<R>): Flow<Res
             flowOf(Result.failure(it.exceptionOrNull() as CatsBankingException))
         }
     }
+
+@Composable
+fun  <T> Flow<T>.ObserveLifecycleAwareEvents(block: (T) -> Unit){
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(this, lifecycleOwner.lifecycle) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            this@ObserveLifecycleAwareEvents.collect {
+                block(it)
+            }
+        }
+    }
+}

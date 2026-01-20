@@ -8,7 +8,7 @@ class FakeBanksListRepository : BanksListRepository {
     
     var banksListResult: Result<List<BankModel>>? = null
 
-    override suspend fun getBanksList(): Flow<Result<List<BankModel>>> = flow {
+    override fun getBanksList(): Flow<Result<List<BankModel>>> = flow {
         if (banksListResult != null) {
             emit(banksListResult!!)
         } else {

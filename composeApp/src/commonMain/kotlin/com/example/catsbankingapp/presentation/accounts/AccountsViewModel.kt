@@ -6,7 +6,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class AccountsViewModel(private val presenter: AccountsPresenter) : ViewModel() {
+class AccountsViewModel(
+    presenterFactory: AccountsPresenterFactory
+) : ViewModel() {
+
+    private val presenter = presenterFactory.create(viewModelScope)
 
     init {
         getBanksList()

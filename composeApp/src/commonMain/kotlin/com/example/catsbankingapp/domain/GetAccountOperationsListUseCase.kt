@@ -11,7 +11,7 @@ class GetAccountOperationsListUseCase(
     private val accountsRepository: BanksListRepository,
     private val accountMapper: AccountMapper
 ) {
-    suspend fun getAccountOperationsList(accountId: String): Flow<Result<Account>> {
+    fun getAccountOperationsList(accountId: String): Flow<Result<Account>> {
         return accountsRepository.getBanksList().mapResultOnSuccess { bankModels ->
             val account = bankModels.flatMap { it.accounts }.find { it.id == accountId }
             if (account != null) {
@@ -23,5 +23,5 @@ class GetAccountOperationsListUseCase(
                 Result.failure(Exception("Account not found"))
             }
         }
-    }
+    }   
 }

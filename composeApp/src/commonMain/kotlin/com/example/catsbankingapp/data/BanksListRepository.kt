@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 
 interface BanksListRepository {
-    suspend fun getBanksList(): Flow<Result<List<BankModel>>>
+    fun getBanksList(): Flow<Result<List<BankModel>>>
 }
 
 class BanksListRepositoryImpl(
@@ -19,7 +19,7 @@ class BanksListRepositoryImpl(
     private val localBanksListDataSource: LocalBanksListDataSource
 ): BanksListRepository {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getBanksList(): Flow<Result<List<BankModel>>> {
+    override fun getBanksList(): Flow<Result<List<BankModel>>> {
         return localBanksListDataSource.getBanksList().flatMapLatest { result ->
             if (result.isSuccess) {
                 flowOf(result)
