@@ -33,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,7 @@ import com.example.catsbankingapp.presentation.accounts.models.BankUIModel
 import com.example.catsbankingapp.presentation.accounts.models.BanksListScreenUIModel
 import com.example.catsbankingapp.presentation.error.ErrorScreen
 import com.example.catsbankingapp.presentation.loading.LoadingScreen
+import com.example.catsbankingapp.presentation.tests.tags.accountscreen.AccountScreenSelectors
 import com.example.catsbankingapp.utils.ObserveLifecycleAwareEvents
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -92,7 +94,10 @@ fun AccountsScreen(
         ) {
             when (uiState) {
                 is BanksListScreenUIState.Loading -> LoadingScreen()
-                is BanksListScreenUIState.Success -> AccountsScreenContent(banksList = uiState.banksList)
+                is BanksListScreenUIState.Success -> AccountsScreenContent(
+                    modifier = Modifier,
+                    banksList = uiState.banksList
+                )
                 is BanksListScreenUIState.Error -> ErrorScreen(
                     message = uiState.message,
                     onRetry = uiState.onRetry
@@ -108,45 +113,54 @@ fun AccountsScreenContent(
     banksList: BanksListScreenUIModel
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .testTag(AccountScreenSelectors.AccountScreenTag)
+            .fillMaxSize()
     ) {
-        // CA Bank Section
-        item {
-            Text(
-                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp, start = 8.dp),
-                text = banksList.CABankSection.title,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.SemiBold
+        if (banksList.CABankSection.banks.isNotEmpty()) {
+            // CA Bank Section
+            item {
+                Text(
+                    modifier = Modifier
+                        .testTag(AccountScreenSelectors.CABanksSectionHeaderTag)
+                        .padding(top = 4.dp, bottom = 4.dp, start = 8.dp),
+                    text = banksList.CABankSection.title,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.SemiBold
+                    )
                 )
-            )
-        }
-        itemsIndexed(
-            items = banksList.CABankSection.banks,
-            key = { _, bank -> bank.title }
-        ) { index, bank ->
-            BankAccountCard(bank = bank)
-            if (index < banksList.CABankSection.banks.lastIndex) {
-                HorizontalDivider(
-                    Modifier.fillMaxWidth().padding(start = 8.dp)
+            }
+            itemsIndexed(
+                items = banksList.CABankSection.banks,
+                key = { _, bank -> bank.title }
+            ) { index, bank ->
+                BankAccountCard(
+                    modifier = Modifier.testTag(AccountScreenSelectors.CABankTag(index)),
+                    bank = bank,
+                    isCABank = true,
+                    isNotLastItem = index < banksList.CABankSection.banks.lastIndex
                 )
             }
         }
-
-        // Other Banks Section
-        item {
-            Text(
-                modifier = Modifier.padding(top = 24.dp, bottom = 4.dp, start = 8.dp),
-                text = banksList.otherBanksSection.title,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.SemiBold
+        if (banksList.otherBanksSection.banks.isNotEmpty()) {
+            // Other Banks Section
+            item {
+                Text(
+                    modifier = Modifier
+                        .testTag(AccountScreenSelectors.OtherBanksSectionHeaderTag)
+                        .padding(top = 24.dp, bottom = 4.dp, start = 8.dp),
+                    text = banksList.otherBanksSection.title,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.SemiBold
+                    )
                 )
-            )
-        }
-        itemsIndexed(banksList.otherBanksSection.banks) { index, bank ->
-            BankAccountCard(bank = bank)
-            if (index < banksList.otherBanksSection.banks.lastIndex) {
-                HorizontalDivider(
-                    Modifier.fillMaxWidth().padding(start = 8.dp)
+            }
+            itemsIndexed(banksList.otherBanksSection.banks) { index, bank ->
+                BankAccountCard(
+                    modifier = Modifier.testTag(AccountScreenSelectors.OtherBankTag(index)),
+                    bank = bank,
+                    isCABank = false,
+                    isNotLastItem = index < banksList.otherBanksSection.banks.lastIndex
                 )
             }
         }
@@ -157,12 +171,15 @@ fun AccountsScreenContent(
 private fun BankAccountCard(
     modifier: Modifier = Modifier,
     expandedByDefault: Boolean = false,
-    bank: BankUIModel
+    bank: BankUIModel,
+    isCABank: Boolean,
+    isNotLastItem: Boolean
 ) {
     // make sure the expanded value survive the configuration changes
     var expanded by rememberSaveable { mutableStateOf(expandedByDefault) }
     // expandable header
     Surface(
+        modifier = modifier,
         color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Column {
@@ -213,14 +230,20 @@ private fun BankAccountCard(
                 )
             ) {
                 HorizontalDivider(
-                    modifier.fillMaxWidth()
+                    Modifier.fillMaxWidth()
                         .padding(start = 8.dp)
                 )
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     bank.accounts.forEachIndexed { index, account ->
+                        val bankAccountTag = if (isCABank) {
+                            AccountScreenSelectors.CABanksAccountTag(index)
+                        } else {
+                            AccountScreenSelectors.OtherBanksAccountTag(index)
+                        }
                         AccountCard(
+                            modifier = Modifier.testTag(bankAccountTag),
                             account = account
                         )
                         if (index < bank.accounts.lastIndex) {
@@ -235,6 +258,11 @@ private fun BankAccountCard(
                 }
             }
         }
+    }
+    if (isNotLastItem) {
+        HorizontalDivider(
+            Modifier.fillMaxWidth().padding(start = 8.dp)
+        )
     }
 }
 

@@ -16,18 +16,32 @@ import org.jetbrains.compose.resources.stringResource
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.platform.testTag
+import com.example.catsbankingapp.presentation.tests.tags.errorscreen.ErrorScreenSelectors
 
 @Composable
-fun ErrorScreen(title: String = stringResource(Res.string.Error_Screen_Retry_Btn_Title), message: String, onRetry: () -> Unit = {}) {
+fun ErrorScreen(
+    title: String = stringResource(Res.string.Error_Screen_Retry_Btn_Title),
+    message: String,
+    onRetry: () -> Unit = {}
+) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .testTag(ErrorScreenSelectors.ErrorScreenTag)
+            .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Error: $message")
-        Button(onClick = onRetry){
+        Text(
+            modifier = Modifier.testTag(ErrorScreenSelectors.ErrorScreenTextTag),
+            text = "Error: $message"
+        )
+        Button(
+            modifier = Modifier.testTag(ErrorScreenSelectors.ErrorScreenRetryBtn),
+            onClick = onRetry
+        ){
             Text(title)
         }
     }

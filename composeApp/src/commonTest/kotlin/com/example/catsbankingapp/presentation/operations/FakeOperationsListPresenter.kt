@@ -25,6 +25,6 @@ class FakeOperationsListPresenter : OperationsListPresenter {
 class FakeOperationsListPresenterFactory : OperationsListPresenterFactory {
     val fakePresenter = FakeOperationsListPresenter()
     override fun create(coroutineScope: CoroutineScope): OperationsListPresenter {
-        return FakeOperationsListPresenter()
+        return fakePresenter
     }
 }

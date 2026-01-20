@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,6 +35,7 @@ import com.example.catsbankingapp.presentation.error.ErrorScreen
 import com.example.catsbankingapp.presentation.loading.LoadingScreen
 import com.example.catsbankingapp.presentation.operations.models.AccountOperationsScreenModel
 import com.example.catsbankingapp.presentation.operations.models.OperationUIModel
+import com.example.catsbankingapp.presentation.tests.tags.operationslistscreen.AccountOperationsListScreenSelectors
 import com.example.catsbankingapp.utils.ObserveLifecycleAwareEvents
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -86,6 +88,11 @@ fun OperationsListScreen(
                 title = {},
                 navigationIcon = {
                     IconButton(
+                        modifier = Modifier
+                            .testTag(
+                                AccountOperationsListScreenSelectors
+                                    .AccountOperationsListBackNavigationTag
+                            ),
                         onClick = onBackNavigation
                     ) {
                         Icon(
@@ -123,7 +130,9 @@ fun AccountOperationsScreenContent(
     accountOperationsScreenModel: AccountOperationsScreenModel
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .testTag(AccountOperationsListScreenSelectors.AccountOperationsListScreenTag)
+            .fillMaxSize()
     ) {
         item {
             Column(
@@ -134,10 +143,14 @@ fun AccountOperationsScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
+                    modifier = Modifier
+                        .testTag(AccountOperationsListScreenSelectors.TotalBalanceTag),
                     text = accountOperationsScreenModel.totalBalance,
                     style = MaterialTheme.typography.headlineLarge
                 )
                 Text(
+                    modifier = Modifier
+                        .testTag(AccountOperationsListScreenSelectors.AccountTitleTag),
                     text = accountOperationsScreenModel.accountTitle,
                     style = MaterialTheme.typography.titleLarge
                 )
@@ -147,7 +160,12 @@ fun AccountOperationsScreenContent(
             items = accountOperationsScreenModel.operations,
             key = { _, operation -> operation.id }
         ) { index, operation ->
-            AccountOperationCard(operation = operation)
+            AccountOperationCard(
+
+                modifier = Modifier.testTag(AccountOperationsListScreenSelectors.OperationCardTag(index)),
+                operation = operation,
+                operationIndex = index
+            )
             if (index < accountOperationsScreenModel.operations.lastIndex) {
                 HorizontalDivider(
                     modifier.fillMaxWidth()
@@ -161,7 +179,8 @@ fun AccountOperationsScreenContent(
 @Composable
 fun AccountOperationCard(
     modifier: Modifier = Modifier,
-    operation: OperationUIModel
+    operation: OperationUIModel,
+    operationIndex: Int
 ) {
     Surface(
         modifier = modifier,
@@ -178,17 +197,23 @@ fun AccountOperationCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
+                    modifier = Modifier
+                        .testTag(AccountOperationsListScreenSelectors.OperationTitleTag(operationIndex)),
                     text = operation.title,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                 )
                 Text(
+                    modifier = Modifier
+                        .testTag(AccountOperationsListScreenSelectors.OperationDateTag(operationIndex)),
                     text = operation.date.orEmpty(),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                 )
             }
             Text(
+                modifier = Modifier
+                    .testTag(AccountOperationsListScreenSelectors.OperationBalanceTag(operationIndex)),
                 text = operation.balance,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
