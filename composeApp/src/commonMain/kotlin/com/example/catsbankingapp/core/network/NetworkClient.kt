@@ -4,23 +4,22 @@ import com.example.catsbankingapp.core.CatsBankingException
 import com.example.catsbankingapp.utils.safeRunSuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.request.request
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.serialization.JsonConvertException
-import io.ktor.client.plugins.HttpRequestTimeoutException
-import io.ktor.client.network.sockets.ConnectTimeoutException
-import io.ktor.client.network.sockets.SocketTimeoutException
-import io.ktor.utils.io.errors.IOException
-import kotlinx.serialization.SerializationException
 import io.ktor.util.network.UnresolvedAddressException
 import io.ktor.util.reflect.TypeInfo
 import io.ktor.util.reflect.typeInfo
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.io.IOException
+import kotlinx.serialization.SerializationException
 
 
 class NetworkClient(
