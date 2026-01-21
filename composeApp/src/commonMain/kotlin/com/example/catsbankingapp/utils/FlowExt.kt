@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("UNCHECKED_CAST")
 fun <T, R> Flow<Result<T>>.mapOnSuccess(block: (T) -> R): Flow<Result<R>> =
     this.flatMapConcat {
         if (it.isSuccess){
@@ -36,6 +37,7 @@ fun <T> Flow<Result<T>>.onSuccess(block: (T) -> Unit): Flow<Result<T>> =
     }
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("UNCHECKED_CAST")
 fun <T, R> Flow<Result<T>>.mapResultOnSuccess(block: (T) -> Result<R>): Flow<Result<R>> =
     this.flatMapConcat {
         if (it.isSuccess){
