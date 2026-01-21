@@ -1,6 +1,7 @@
 package com.example.catsbankingapp.core.network
 
 import com.example.catsbankingapp.core.CatsBankingException
+import com.example.catsbankingapp.utils.safeRunSuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.request
@@ -15,6 +16,7 @@ import kotlinx.serialization.SerializationException
 import io.ktor.util.network.UnresolvedAddressException
 import io.ktor.util.reflect.TypeInfo
 import io.ktor.util.reflect.typeInfo
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -36,28 +38,28 @@ class NetworkClient(
         serviceType: ServiceType<T>,
         typeInfo: TypeInfo,
     ): Flow<Result<T>> = flow {
-        try {
-            val httpResponse = httpClient.request(appConfig.baseUrl) {
-                url({
-                    pathSegments = serviceType.path.split("/")
-                    serviceType.queryParameters.forEach {
-                        parameters.append(it.key, it.value)
-                    }
-                    serviceType.headers.forEach {
-                        headers.append(it.key, it.value)
-                    }
-                })
-                method = serviceType.method
+            safeRunSuspend {
+                val httpResponse = httpClient.request(appConfig.baseUrl) {
+                    url({
+                        pathSegments = serviceType.path.split("/")
+                        serviceType.queryParameters.forEach {
+                            parameters.append(it.key, it.value)
+                        }
+                        serviceType.headers.forEach {
+                            headers.append(it.key, it.value)
+                        }
+                    })
+                    method = serviceType.method
+                }
+                if (!httpResponse.status.isSuccess()) {
+                    val error: Result<T> = parseNetworkErrorExceptions(httpResponse.status)
+                    emit(error)
+                    return@safeRunSuspend
+                }
+                emit(Result.success(httpResponse.body(typeInfo)))
+            }.onFailure {
+                emit(parseAndConvertException(it))
             }
-            if (!httpResponse.status.isSuccess()) {
-                val error: Result<T> = parseNetworkErrorExceptions(httpResponse.status)
-                emit(error)
-                return@flow
-            }
-            emit(Result.success(httpResponse.body(typeInfo)))
-        } catch (ex: Exception) {
-            emit(parseAndConvertException(ex))
-        }
     }.flowOn(dispatcher)
 
     private fun <T>parseAndConvertException(ex: Throwable): Result<T> = when (ex) {

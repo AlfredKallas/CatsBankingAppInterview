@@ -3,7 +3,6 @@ package com.example.catsbankingapp.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.catsbankingapp.core.CatsBankingException
@@ -11,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T, R> Flow<Result<T>>.mapOnSuccess(block: (T) -> R): Flow<Result<R>> =
@@ -57,3 +57,8 @@ fun  <T> Flow<T>.ObserveLifecycleAwareEvents(block: (T) -> Unit){
         }
     }
 }
+
+suspend fun <T> safeRunSuspend(block: suspend () -> T): Result<T> =
+    runCatching { block() }.onFailure {
+        if (it is CancellationException) throw it
+    }
