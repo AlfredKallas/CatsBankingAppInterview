@@ -6,11 +6,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.catsbankingapp.presentation.accounts.AccountsScreen
+import com.example.catsbankingapp.presentation.mainscreen.MainScreen
 import com.example.catsbankingapp.presentation.operations.OperationsListScreen
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
 
 // Creates routes
+@Serializable
+object MainScreen
+
 @Serializable
 object AccountsList
 
@@ -18,13 +22,23 @@ object AccountsList
 data class OperationsForAccount(val accountId: String)
 
 @Composable
-fun mainAppNavHost() {
+fun MainAppNavHost() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = AccountsList) {
+    NavHost(navController = navController, startDestination = MainScreen) {
+        composable<MainScreen> {
+            MainScreen(onButtonClicked = {
+                navController.navigate(AccountsList)
+            })
+        }
+
         composable<AccountsList> {
-            AccountsScreen(navigateToAccountScreen = {
-                navController.navigate(OperationsForAccount(it))
+            AccountsScreen(
+                navigateToAccountScreen = {
+                    navController.navigate(OperationsForAccount(it))
+            },
+            onBackNavigation = {
+                navController.popBackStack()
             })
         }
         composable<OperationsForAccount>(

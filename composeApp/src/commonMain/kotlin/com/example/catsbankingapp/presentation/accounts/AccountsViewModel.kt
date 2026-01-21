@@ -19,6 +19,7 @@ class AccountsViewModel(
     fun getBanksList() {
         viewModelScope.launch {
             presenter.getBanksUIList()
+            println("AccountsViewModel - Banks List Requested")
         }
     }
 

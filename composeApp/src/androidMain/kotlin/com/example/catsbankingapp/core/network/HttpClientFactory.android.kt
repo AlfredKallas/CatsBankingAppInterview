@@ -12,7 +12,7 @@ class AndroidHttpClientFactory: HttpClientFactory {
             engine {
                 config {
                     retryOnConnectionFailure(true)
-                    connectTimeout(30, TimeUnit.SECONDS)
+                    connectTimeout(1, TimeUnit.SECONDS)
                 }
             }
             configureCommon(config, json)

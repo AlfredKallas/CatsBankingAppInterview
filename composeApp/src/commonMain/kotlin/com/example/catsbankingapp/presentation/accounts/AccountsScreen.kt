@@ -16,11 +16,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardBackspace
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -38,6 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.example.catsbankingapp.presentation.accounts.models.AccountUIModel
 import com.example.catsbankingapp.presentation.accounts.models.BankSectionUIModel
 import com.example.catsbankingapp.presentation.accounts.models.BankUIModel
@@ -45,6 +50,7 @@ import com.example.catsbankingapp.presentation.accounts.models.BanksListScreenUI
 import com.example.catsbankingapp.presentation.error.ErrorScreen
 import com.example.catsbankingapp.presentation.loading.LoadingScreen
 import com.example.catsbankingapp.presentation.tests.tags.accountscreen.AccountScreenSelectors
+import com.example.catsbankingapp.presentation.tests.tags.operationslistscreen.AccountOperationsListScreenSelectors
 import com.example.catsbankingapp.utils.ObserveLifecycleAwareEvents
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -52,7 +58,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun AccountsScreen(
     modifier: Modifier = Modifier,
-    navigateToAccountScreen: (String) -> Unit = {}
+    navigateToAccountScreen: (String) -> Unit = {},
+    onBackNavigation: () -> Unit = {},
 ) {
     val viewModel = koinViewModel<AccountsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -63,14 +70,29 @@ fun AccountsScreen(
             is AccountsEvents.OnRetryClicked -> viewModel.getBanksList()
         }
     }
-    AccountsScreen(modifier, uiState)
+    val onComposedBackNavigation: () -> Unit = {
+        onBackNavigation.invoke()
+    }
+
+    val navigationEvenState = rememberNavigationEventState<NavigationEventInfo>(
+        currentInfo = NavigationEventInfo.None,
+    )
+    NavigationBackHandler(
+        state = navigationEvenState,
+        isBackEnabled = true,
+        onBackCompleted = {
+            onComposedBackNavigation.invoke()
+        }
+    )
+    AccountsScreen(modifier, uiState, onComposedBackNavigation)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountsScreen(
     modifier: Modifier = Modifier,
-    uiState: BanksListScreenUIState
+    uiState: BanksListScreenUIState,
+    onBackNavigation: () -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier
@@ -85,6 +107,21 @@ fun AccountsScreen(
                         )
 
                     )
+                },
+                navigationIcon = {
+                    IconButton(
+                        modifier = Modifier
+                            .testTag(
+                                AccountOperationsListScreenSelectors
+                                    .AccountOperationsListBackNavigationTag
+                            ),
+                        onClick = onBackNavigation
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardBackspace,
+                            contentDescription = null
+                        )
+                    }
                 }
             )
         }

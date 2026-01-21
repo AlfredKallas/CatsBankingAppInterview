@@ -1,5 +1,7 @@
 package com.example.catsbankingapp.di
 
+import com.example.catsbankingapp.utils.DefaultDispatchersProvider
+import com.example.catsbankingapp.utils.DispatchersProvider
 import com.example.catsbankingapp.utils.StringProvider
 import com.example.catsbankingapp.utils.StringProviderImpl
 import com.example.catsbankingapp.utils.currencyformatter.CurrencyFormatter
@@ -12,5 +14,8 @@ val utilsModule = module {
     }
     single<StringProvider> {
         StringProviderImpl()
+    }
+    single<DispatchersProvider> {
+        DefaultDispatchersProvider()
     }
 }

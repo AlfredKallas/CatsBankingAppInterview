@@ -60,7 +60,10 @@ fun  <T> Flow<T>.ObserveLifecycleAwareEvents(block: (T) -> Unit){
     }
 }
 
-suspend fun <T> safeRunSuspend(block: suspend () -> T): Result<T> =
-    runCatching { block() }.onFailure {
+suspend fun <T> safeRunSuspend(
+    block: suspend () -> T,
+    onNoneCancellationException: suspend (Throwable) -> Unit = {}
+): Result<T> = runCatching { block() }.onFailure {
         if (it is CancellationException) throw it
-    }
+        onNoneCancellationException(it)
+}

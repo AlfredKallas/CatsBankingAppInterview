@@ -37,28 +37,31 @@ class NetworkClient(
         serviceType: ServiceType<T>,
         typeInfo: TypeInfo,
     ): Flow<Result<T>> = flow {
-            safeRunSuspend {
-                val httpResponse = httpClient.request(appConfig.baseUrl) {
-                    url({
-                        pathSegments = serviceType.path.split("/")
-                        serviceType.queryParameters.forEach {
-                            parameters.append(it.key, it.value)
-                        }
-                        serviceType.headers.forEach {
-                            headers.append(it.key, it.value)
-                        }
-                    })
-                    method = serviceType.method
+            safeRunSuspend(
+                block = {
+                    val httpResponse = httpClient.request(appConfig.baseUrl) {
+                        url({
+                            pathSegments = serviceType.path.split("/")
+                            serviceType.queryParameters.forEach {
+                                parameters.append(it.key, it.value)
+                            }
+                            serviceType.headers.forEach {
+                                headers.append(it.key, it.value)
+                            }
+                        })
+                        method = serviceType.method
+                    }
+                    if (!httpResponse.status.isSuccess()) {
+                        val error: Result<T> = parseNetworkErrorExceptions(httpResponse.status)
+                        emit(error)
+                        return@safeRunSuspend
+                    }
+                    emit(Result.success(httpResponse.body(typeInfo)))
+                },
+                onNoneCancellationException = {
+                    emit(parseAndConvertException(it))
                 }
-                if (!httpResponse.status.isSuccess()) {
-                    val error: Result<T> = parseNetworkErrorExceptions(httpResponse.status)
-                    emit(error)
-                    return@safeRunSuspend
-                }
-                emit(Result.success(httpResponse.body(typeInfo)))
-            }.onFailure {
-                emit(parseAndConvertException(it))
-            }
+        )
     }.flowOn(dispatcher)
 
     private fun <T>parseAndConvertException(ex: Throwable): Result<T> = when (ex) {

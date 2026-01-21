@@ -5,6 +5,7 @@ import catsbankingapp.composeapp.generated.resources.Res
 import com.example.catsbankingapp.domain.GetBanksListUseCase
 import com.example.catsbankingapp.presentation.accounts.mappers.BanksListScreenMapper
 import com.example.catsbankingapp.presentation.accounts.models.BanksListScreenUIModel
+import com.example.catsbankingapp.utils.DispatchersProvider
 import com.example.catsbankingapp.utils.StringProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -40,6 +41,7 @@ sealed class AccountsEvents {
 
 class AccountsPresenterImpl(
     private val coroutineScope: CoroutineScope,
+    private val dispatchersProvider: DispatchersProvider,
     private val getBanksListUseCase: GetBanksListUseCase,
     private val banksListScreenMapper: BanksListScreenMapper,
     private val stringProvider: StringProvider
@@ -78,12 +80,12 @@ class AccountsPresenterImpl(
     }
 
     override fun onRetryClicked() {
-        coroutineScope.launch {
+        coroutineScope.launch(dispatchersProvider.mainImmediate) {
             _events.send(AccountsEvents.OnRetryClicked)
         }
     }
     override fun onAccountClicked(accountId: String) {
-        coroutineScope.launch {
+        coroutineScope.launch(dispatchersProvider.mainImmediate) {
             _events.send(AccountsEvents.OnAccountClicked(accountId))
         }
     }

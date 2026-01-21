@@ -158,7 +158,7 @@ fun AccountOperationsScreenContent(
         }
         itemsIndexed(
             items = accountOperationsScreenModel.operations,
-            key = { _, operation -> operation.id }
+            key = { _, operation -> "${operation.id}_${operation.title}_${operation.date}_${operation.balance}" }
         ) { index, operation ->
             AccountOperationCard(
 
