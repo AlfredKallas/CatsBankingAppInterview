@@ -33,7 +33,7 @@ val accountsScreenModule = module {
     }
 
     factory<AccountsPresenterFactory> {
-        AccountsPresenterFactoryImpl(get(), get(), get(), get())
+        AccountsPresenterFactoryImpl(get(), get(), get())
     }
 
     viewModelOf(::AccountsViewModel)

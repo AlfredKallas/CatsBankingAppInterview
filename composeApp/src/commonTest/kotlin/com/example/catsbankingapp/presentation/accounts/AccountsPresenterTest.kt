@@ -14,9 +14,7 @@ import com.example.catsbankingapp.presentation.accounts.mappers.BanksListScreenM
 import com.example.catsbankingapp.presentation.accounts.mappers.FakeBanksListScreenMapper
 import com.example.catsbankingapp.utils.DateTimeParser
 import com.example.catsbankingapp.utils.DateTimeParserImpl
-import com.example.catsbankingapp.utils.DispatchersProvider
 import com.example.catsbankingapp.utils.FakeStringProvider
-import com.example.catsbankingapp.utils.FakeTestDispatcherProvider
 import com.example.catsbankingapp.utils.StringProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -54,9 +52,6 @@ class AccountsPresenterTest : KoinTest {
                 singleOf(::GetBanksListUseCase)
                 single { FakeStringProvider() }
                 single<StringProvider> { get<FakeStringProvider>() }
-                single<DispatchersProvider> {
-                    FakeTestDispatcherProvider(testDispatcher)
-                }
                 singleOf(::FakeBanksListScreenMapper) { bind<BanksListScreenMapper>() }
                 singleOf(::AccountsPresenterFactoryImpl) { bind<AccountsPresenterFactory>() }
             })
