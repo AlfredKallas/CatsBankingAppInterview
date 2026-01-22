@@ -2,6 +2,15 @@
 
 A modern, cross-platform banking application built with **Kotlin Multiplatform (KMP)** and **Compose Multiplatform**. This project demonstrates technical excellence in architecture, testing, and clean code practices.
 
+## 🚀 AGP 9 Migration & Project Structure Update
+
+This project has been migrated to Android Gradle Plugin 9.x, which introduces a new project structure and testing conventions.
+
+### Key Changes:
+- **`androidHostTest` Source Set**: Following the new convention, JVM-based tests (including Robolectric UI tests) are now located in `composeApp/src/androidHostTest/kotlin`. This replaces the previous `androidTest` folder for unit and instrumentation tests.
+- **`iosTest` Source Set**: Shared tests between iOS and other platforms remain in `commonTest`.
+- **Gradle Tasks**: The commands to run tests have been updated to reflect this new structure.
+
 ## 🏗️ Architecture
 
 The project follows **Clean Architecture** principles, ensuring separation of concerns and high testability across platforms.
@@ -114,7 +123,7 @@ This ensures a smooth offline experience and reduced network overhead.
 
 ## 🧪 Testing Strategy
 
-The project features a comprehensive test suite (Unit + UI) shared in `commonTest`.
+The project features a comprehensive test suite (Unit + UI) shared in `commonTest` and `androidHostTest`.
 
 ### 1. Unit Tests
 Thoroughly covers:
@@ -132,7 +141,7 @@ Shared UI tests verify the rendering of:
 
 | Platform | Command |
 | :--- | :--- |
-| **Android (Unit + UI Runtime)** | `./gradlew :composeApp:testDevDebugUnitTest` |
+| **Android (Unit + UI Runtime)** | `./gradlew :composeApp:testAndroidHostTest` |
 | **iOS (Unit + UI Native)** | `./gradlew :composeApp:iosSimulatorArm64Test` |
 | **Coverage Report** | `./gradlew :composeApp:koverHtmlReportDevDebug` |
 
