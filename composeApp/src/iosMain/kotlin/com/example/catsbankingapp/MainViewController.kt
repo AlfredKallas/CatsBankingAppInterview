@@ -1,5 +1,10 @@
 package com.example.catsbankingapp
 
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.uikit.EndEdgePanGestureBehavior
 import androidx.compose.ui.window.ComposeUIViewController
 
-fun MainViewController() = ComposeUIViewController { App() }
+@OptIn(ExperimentalComposeUiApi::class)
+fun MainViewController() = ComposeUIViewController(
+    configure = {  endEdgePanGestureBehavior = EndEdgePanGestureBehavior.Forward }
+) { App() }
