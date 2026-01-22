@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.dependencies
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -22,16 +23,6 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
     }
     buildFeatures {
         buildConfig = true
@@ -74,7 +65,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.composeApp)
+    api(projects.composeApp)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
@@ -90,10 +81,4 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.android)
-
-
-    testImplementation(libs.androidx.testExt.junit)
-    androidTestImplementation(libs.androidx.testExt.junit)
-    androidTestImplementation(libs.compose.ui.test.junit4.android)
-    debugImplementation(libs.compose.ui.test.manifest.android)
 }

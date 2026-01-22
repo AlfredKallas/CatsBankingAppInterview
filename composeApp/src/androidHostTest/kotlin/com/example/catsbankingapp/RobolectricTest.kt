@@ -5,5 +5,5 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@Config(sdk = [34])
 actual abstract class RobolectricTest actual constructor()

@@ -1,6 +1,5 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
-import org.gradle.kotlin.dsl.kotlin
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -15,14 +14,13 @@ plugins {
 
 kotlin {
     androidLibrary {
-//        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-//        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
         namespace = "com.example.catsbankingapp.composeAppLibrary"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
         withJava()
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
+            freeCompilerArgs.add("-Xexpect-actual-classes")
         }
         androidResources {
             enable = true
@@ -31,12 +29,7 @@ kotlin {
         // Opt-in to enable and configure host-side (unit) tests
         withHostTest {
             isIncludeAndroidResources = true
-        }
-
-        // Opt-in to enable and configure device-side (instrumented) tests
-        withDeviceTest {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-            execution = "HOST"
+            isReturnDefaultValues = true
         }
     }
     
@@ -105,6 +98,13 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+        }
+
+        val androidHostTest = findByName("androidHostTest")
+
+        androidHostTest?.dependencies {
+            api(libs.androidx.testExt.junit)
+            api(libs.compose.ui.test.manifest.android)
         }
     }
 }
