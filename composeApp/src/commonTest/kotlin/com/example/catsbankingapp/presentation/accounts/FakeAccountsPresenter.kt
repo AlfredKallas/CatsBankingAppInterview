@@ -4,14 +4,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
-class FakeAccountsPresenter : AccountsPresenter, AccountsPresenterActions {
+class FakeAccountsPresenter(
+    private val coroutineScope: CoroutineScope
+) : AccountsPresenter, AccountsPresenterActions {
     
     // Public mutable state for test manipulation
-    val _uiState = MutableStateFlow<BanksListScreenUIState>(BanksListScreenUIState.Loading("Test"))
+    val _uiState = MutableStateFlow<BanksListScreenUIState>(BanksListScreenUIState.Loading(""))
     override val uiState: Flow<BanksListScreenUIState> = _uiState
 
-    private val _events = MutableSharedFlow<AccountsEvents>(replay = 1)
+    private val _events = MutableSharedFlow<AccountsEvents>(extraBufferCapacity = 1)
     override val events: Flow<AccountsEvents> = _events
 
     var getBanksUIListCalled = false
@@ -21,7 +24,9 @@ class FakeAccountsPresenter : AccountsPresenter, AccountsPresenterActions {
     }
 
     override fun onAccountClicked(accountId: String) {
-        _events.tryEmit(AccountsEvents.OnAccountClicked(accountId))
+        coroutineScope.launch {
+            _events.emit(AccountsEvents.OnAccountClicked(accountId))
+        }
     }
 
     override fun onRetryClicked() {
@@ -30,8 +35,10 @@ class FakeAccountsPresenter : AccountsPresenter, AccountsPresenterActions {
 }
 
 class FakeAccountsPresenterFactory : AccountsPresenterFactory {
-    val fakePresenter = FakeAccountsPresenter()
+    lateinit var fakePresenter: FakeAccountsPresenter
     override fun create(coroutineScope: CoroutineScope): AccountsPresenter {
+        val fakePresenter = FakeAccountsPresenter(coroutineScope)
+        this.fakePresenter = fakePresenter
         return fakePresenter
     }
 }

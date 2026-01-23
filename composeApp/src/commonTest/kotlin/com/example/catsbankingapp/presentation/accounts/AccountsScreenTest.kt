@@ -1,8 +1,17 @@
 package com.example.catsbankingapp.presentation.accounts
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.runComposeUiTest
+import app.cash.turbine.test
 import com.example.catsbankingapp.RobolectricTest
-import com.example.catsbankingapp.presentation.accounts.models.*
+import com.example.catsbankingapp.presentation.accounts.models.AccountUIModel
+import com.example.catsbankingapp.presentation.accounts.models.BankSectionUIModel
+import com.example.catsbankingapp.presentation.accounts.models.BankUIModel
+import com.example.catsbankingapp.presentation.accounts.models.BanksListScreenUIModel
 import com.example.catsbankingapp.presentation.tests.tags.accountscreen.AccountScreenSelectors
 import com.example.catsbankingapp.presentation.tests.tags.errorscreen.ErrorScreenSelectors
 import com.example.catsbankingapp.presentation.tests.tags.loadingscreen.LoadingScreenSelectors
@@ -10,15 +19,19 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
-import kotlin.test.*
-import kotlinx.coroutines.test.runTest
-import app.cash.turbine.test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class AccountsScreenTest : RobolectricTest(), KoinTest {
 
     private val fakeAccountsPresenterFactory = FakeAccountsPresenterFactory()
-    private val fakePresenter = fakeAccountsPresenterFactory.fakePresenter
+    private val fakePresenter by  lazy {
+        fakeAccountsPresenterFactory.fakePresenter
+    }
 
     @BeforeTest
     fun setup() {
@@ -39,12 +52,15 @@ class AccountsScreenTest : RobolectricTest(), KoinTest {
     @Test
     fun loading_state_shows_loading_screen() = runComposeUiTest {
         // Arrange
-        fakePresenter._uiState.value = BanksListScreenUIState.Loading("Loading Title")
 
         // Act
         setContent {
             AccountsScreen()
         }
+        fakePresenter._uiState.value = BanksListScreenUIState.Loading("Loading Title")
+
+        waitForIdle()
+
 
         // Assert
         onNodeWithTag(LoadingScreenSelectors.LoadingScreenTag).assertIsDisplayed()
@@ -79,12 +95,14 @@ class AccountsScreenTest : RobolectricTest(), KoinTest {
                 )
             )
         )
-        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success Title", banksList)
 
         // Act
         setContent {
             AccountsScreen()
         }
+
+        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success Title", banksList)
+
         waitForIdle()
 
         // Assert Headers
@@ -113,12 +131,13 @@ class AccountsScreenTest : RobolectricTest(), KoinTest {
             CABankSection = BankSectionUIModel(title = "CA", banks = emptyList()),
             otherBanksSection = BankSectionUIModel(title = "Other", banks = emptyList())
         )
-        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success Title", banksList)
 
         // Act
         setContent {
             AccountsScreen()
         }
+        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success Title", banksList)
+
         waitForIdle()
 
         // Assert
@@ -138,12 +157,13 @@ class AccountsScreenTest : RobolectricTest(), KoinTest {
             ),
             otherBanksSection = BankSectionUIModel(title = "Other", banks = emptyList())
         )
-        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success", banksList)
 
         // Act
         setContent {
             AccountsScreen()
         }
+        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success", banksList)
+
         waitForIdle()
 
         // Assert
@@ -163,12 +183,13 @@ class AccountsScreenTest : RobolectricTest(), KoinTest {
                 )
             )
         )
-        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success", banksList)
 
         // Act
         setContent {
             AccountsScreen()
         }
+        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success", banksList)
+
         waitForIdle()
 
         // Assert
@@ -179,12 +200,14 @@ class AccountsScreenTest : RobolectricTest(), KoinTest {
     @Test
     fun error_state_shows_error_screen_and_retry_triggers_event() = runComposeUiTest {
         // Arrange
-        fakePresenter._uiState.value = BanksListScreenUIState.Error("Error Title", "Network Error")
 
         // Act
         setContent {
             AccountsScreen()
         }
+
+        fakePresenter._uiState.value = BanksListScreenUIState.Error("Error Title", "Network Error")
+
         waitForIdle()
 
         // Assert
@@ -220,12 +243,12 @@ class AccountsScreenTest : RobolectricTest(), KoinTest {
             ),
             otherBanksSection = BankSectionUIModel(title = "Other", banks = emptyList())
         )
-        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success Title", banksList)
-
         // Act
         setContent {
             AccountsScreen()
         }
+        fakePresenter._uiState.value = BanksListScreenUIState.Success("Success Title", banksList)
+
         waitForIdle()
 
         // Expand Bank Card
@@ -233,19 +256,14 @@ class AccountsScreenTest : RobolectricTest(), KoinTest {
         onNodeWithTag(AccountScreenSelectors.CABankTag(0)).performClick()
         waitForIdle()
 
-        // Click Account
-        onNodeWithTag(AccountScreenSelectors.CABanksAccountTag(0)).performClick()
-        waitForIdle()
-
-        // Assert
-        runTest {
-            fakePresenter.events.test {
-                val event = awaitItem()
-                assertTrue(event is AccountsEvents.OnAccountClicked)
-                // Note: The onClick in AccountsScreen passes account.title as accountId currently
-                // onClick = { account.onClick(account.title) }
-                assertEquals("Account 123", event.accountId)
-            }
+        fakePresenter.events.test {
+            // Click Account
+            onNodeWithTag(AccountScreenSelectors.CABanksAccountTag(0)).performClick()
+            val event = awaitItem()
+            assertTrue(event is AccountsEvents.OnAccountClicked)
+            // Note: The onClick in AccountsScreen passes account.title as accountId currently
+            // onClick = { account.onClick(account.title) }
+            assertEquals("Account 123", event.accountId)
         }
     }
 }

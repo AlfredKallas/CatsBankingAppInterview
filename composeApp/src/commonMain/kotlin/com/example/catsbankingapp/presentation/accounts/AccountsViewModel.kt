@@ -2,8 +2,8 @@ package com.example.catsbankingapp.presentation.accounts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import com.example.catsbankingapp.utils.stateInWhileSubscribed
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class AccountsViewModel(
@@ -12,20 +12,15 @@ class AccountsViewModel(
 
     private val presenter = presenterFactory.create(viewModelScope)
 
-    init {
-        getBanksList()
-    }
-
     fun getBanksList() {
         viewModelScope.launch {
             presenter.getBanksUIList()
-            println("AccountsViewModel - Banks List Requested")
         }
     }
 
-    val uiState = presenter.uiState.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+    val uiState = presenter.uiState.onStart {
+        getBanksList()
+    }.stateInWhileSubscribed(
         initialValue = BanksListScreenUIState.Loading("")
     )
 

@@ -1,5 +1,6 @@
 package com.example.catsbankingapp.presentation.accounts
 
+import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -9,8 +10,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.bind
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
@@ -36,8 +36,8 @@ class AccountsViewModelTest : KoinTest {
         Dispatchers.setMain(StandardTestDispatcher())
         startKoin {
             modules(module {
-                single<AccountsPresenterFactory> { fakeFactory }
-                singleOf(::AccountsViewModel)
+                factory<AccountsPresenterFactory> { fakeFactory }
+                factoryOf(::AccountsViewModel)
             })
         }
     }
@@ -50,11 +50,10 @@ class AccountsViewModelTest : KoinTest {
 
     @Test
     fun init_calls_getBanksList_on_presenter() = runTest {
-        // Accessing viewModel triggers init
-        val vm = viewModel
-
-        // Assert
-        advanceUntilIdle()
-        assertTrue(fakePresenter.getBanksUIListCalled)
+        viewModel.uiState.test {
+            awaitItem()
+            advanceUntilIdle()
+            assertTrue(fakePresenter.getBanksUIListCalled)
+        }
     }
 }

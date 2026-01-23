@@ -5,7 +5,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavType
 import com.example.catsbankingapp.presentation.navigation.OperationsForAccount
 import com.example.catsbankingapp.utils.NavArgsProvider
-import kotlinx.coroutines.flow.stateIn
+import com.example.catsbankingapp.utils.stateInWhileSubscribed
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlin.reflect.typeOf
 
@@ -21,17 +22,13 @@ class OperationsListViewModel(
 
     private val operationsListPresenter = operationsListPresenterFactory.create(viewModelScope)
 
-    val uiState = operationsListPresenter.uiState.stateIn(
-        scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+    val uiState = operationsListPresenter.uiState.onStart {
+        getAccountOperationsList()
+    }.stateInWhileSubscribed(
         initialValue = OperationsListUIState.Loading
     )
 
     val events = operationsListPresenter.events
-
-    init {
-        getAccountOperationsList()
-    }
 
     fun getAccountOperationsList(){
         viewModelScope.launch {

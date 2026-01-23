@@ -2,11 +2,13 @@ package com.example.catsbankingapp.presentation.operations
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavType
+import app.cash.turbine.test
 import com.example.catsbankingapp.presentation.navigation.OperationsForAccount
 import com.example.catsbankingapp.utils.NavArgsProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -58,8 +60,12 @@ class OperationsListViewModelTest : KoinTest {
     @Test
     fun init_calls_getAccountOperationsList_on_presenter_with_correct_accountId() = runTest {
         // Init happens in BeforeTest
+        viewModel.uiState.test {
+            awaitItem()
+            advanceUntilIdle()
+            assertEquals("123", fakePresenterFactory.fakePresenter.lastAccountIdRequested)
+        }
         
         // Assert
-        assertEquals("123", fakePresenterFactory.fakePresenter.lastAccountIdRequested)
     }
 }

@@ -107,6 +107,10 @@ kotlin {
             api(libs.compose.ui.test.manifest.android)
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
 }
 
 dependencies {
@@ -137,4 +141,3 @@ kover {
         }
     }
 }
-

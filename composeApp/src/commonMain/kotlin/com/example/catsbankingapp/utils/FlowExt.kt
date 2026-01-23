@@ -3,14 +3,19 @@ package com.example.catsbankingapp.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import com.example.catsbankingapp.core.CatsBankingException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -68,4 +73,13 @@ suspend fun <T> safeRunSuspend(
 ): Result<T> = runCatching { block() }.onFailure {
         if (it is CancellationException) throw it
         onNoneCancellationException(it)
+}
+
+context(viewModel: ViewModel)
+fun <T> Flow<T>.stateInWhileSubscribed(initialValue: T): StateFlow<T> {
+    return stateIn(
+        scope = viewModel.viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = initialValue,
+    )
 }
