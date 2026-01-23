@@ -6,5 +6,5 @@ import androidx.compose.ui.window.ComposeUIViewController
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun MainViewController() = ComposeUIViewController(
-    configure = {  endEdgePanGestureBehavior = EndEdgePanGestureBehavior.Forward }
+    configure = {  endEdgePanGestureBehavior = EndEdgePanGestureBehavior.Back }
 ) { App() }

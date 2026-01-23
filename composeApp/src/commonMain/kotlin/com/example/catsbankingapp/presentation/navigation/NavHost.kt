@@ -34,8 +34,8 @@ fun MainAppNavHost() {
     NavHost(
         navController = navController,
         startDestination = MainScreen,
-        enterTransition = { slideInHorizontally(initialOffsetX = { -it/2 }) + fadeIn() },
-        exitTransition = { slideOutHorizontally(targetOffsetX = { it/2 }) + fadeOut() },
+        enterTransition = { slideInHorizontally(initialOffsetX = { it/2 }) + fadeIn() },
+        exitTransition = { slideOutHorizontally(targetOffsetX = { -it/2 }) + fadeOut() },
         popEnterTransition = { EnterTransition.None },
         popExitTransition = {  scaleOut(
             targetScale = 0.7F,
