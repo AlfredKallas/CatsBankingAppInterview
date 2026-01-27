@@ -1,14 +1,20 @@
 package com.example.catsbankingapp.presentation.navigation
 
 import androidx.annotation.MainThread
-import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -38,43 +44,81 @@ data class OperationsForAccount(val accountId: String)
 @Composable
 fun MainAppNavHost() {
     val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = MainScreen,
-        enterTransition = { slideInHorizontally(initialOffsetX = { it/2 }) + fadeIn() },
-        exitTransition = { slideOutHorizontally(targetOffsetX = { -it/2 }) + fadeOut() },
-        popEnterTransition = { EnterTransition.None },
-        popExitTransition = {  scaleOut(
-            targetScale = 0.7F,
-            transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 0.5f))
-        }
-    ) {
-        composable<MainScreen> {
-            MainScreen(onButtonClicked = {
-                navController.navigateSafely(AccountsList)
-            })
-        }
 
-        composable<AccountsList> {
-            AccountsScreen(
-                navigateToAccountScreen = {
-                    navController.navigateSafely(OperationsForAccount(it))
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+        NavHost(
+            navController = navController,
+            startDestination = MainScreen,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left
+                )
             },
-            onBackNavigation = {
-                navController.popBackStack()
-            })
-        }
-        composable<OperationsForAccount>(
-            typeMap = mapOf(
-                typeOf<String>() to NavType.StringType
-            )
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left
+                )
+            },
+            popEnterTransition = {
+                fadeIn(initialAlpha = 0.4f)
+            },
+            popExitTransition = {
+                scaleOut(
+                    targetScale = 0.9f,
+                    transformOrigin = TransformOrigin(pivotFractionX = 0.9f, pivotFractionY = 0.5f)
+                )
+            }
         ) {
-            OperationsListScreen(
-                onBackNavigation = {
-                    navController.popBackStack()
+            composable<MainScreen> {
+                ScreenContent {
+                    MainScreen(onButtonClicked = {
+                        navController.navigateSafely(AccountsList)
+                    })
                 }
-            )
+            }
+
+            composable<AccountsList> {
+                ScreenContent {
+                    AccountsScreen(
+                        navigateToAccountScreen = {
+                            navController.navigateSafely(OperationsForAccount(it))
+                        },
+                        onBackNavigation = {
+                            navController.popBackStack()
+                        })
+                }
+            }
+            composable<OperationsForAccount>(
+                typeMap = mapOf(
+                    typeOf<String>() to NavType.StringType
+                )
+            ) {
+                ScreenContent {
+                    OperationsListScreen(
+                        onBackNavigation = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun ScreenContent(content: @Composable () -> Unit) {
+    val shape = RoundedCornerShape(24.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(shape)
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        content()
     }
 }
 
