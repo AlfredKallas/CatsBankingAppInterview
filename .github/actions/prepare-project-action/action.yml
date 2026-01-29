@@ -9,10 +9,13 @@ runs:
       with:
         java-version: '17'
         distribution: 'temurin'
+      shell: bash
 
     - name: Change wrapper permissions
       run: chmod +x ./gradlew
+      shell: bash
 
     # Step 3: Setup Gradle with caching (speeds up subsequent builds)
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
+      shell: bash
