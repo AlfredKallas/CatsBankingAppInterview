@@ -4,35 +4,20 @@ on:
   pull_request:
     branches: [ "main" ]
 jobs:
-  checkout-and-install-gradle:
+  build-android:
     # Use the latest Ubuntu runner (efficient for most Android/KMP builds)
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Check out your repository's code
-      - name: Checkout code
+      - name: Checkout Repo
         uses: actions/checkout@v4
-      # Step 2: Set up Java (required for Android/Gradle builds)
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
 
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
-
-#      - name: Setup Android SDK
-#        uses: android-actions/setup-android@v3
-#
-#      - name: Accept Android SDK license
-#        run: yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses || if [ $? -ne '141' ]; then exit $?; fi;  #Captures SIGPIPE 141 error but still allow repeating "y" to accept all licenses
-
-      # Step 3: Setup Gradle with caching (speeds up subsequent builds)
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
+      - name: Prepare Project
+        uses: ./.github/actions/prepare-project-action
       # Step 4: Build the application
       # This ensures the code compiles and all resources are valid.
+
+
+
       - name: Build
         run: ./gradlew :androidApp:assembleDevDebug
       # Step 5: Run your tests
@@ -41,10 +26,20 @@ jobs:
         run: ./gradlew :composeApp:testAndroidHostTest
       # Step 5: Run your tests
       # This command runs unit tests for all modules.
-#  Build iOS:
-#    needs:
-#      - Checkout And Install Gradle
-#    runs-on: macos-latest
-#    steps:
-#      - name: Run iOS Unit + UI Native Tests
-#        run: ./gradlew :composeApp:iosSimulatorArm64Test
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Prepare Project
+        uses: ./.github/actions/prepare-project-action
+
+      - name: Set Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_26.1.1.app/Contents/Developer
+
+      - name: iOS debug build
+        run: cd iosApp && xcodebuild -scheme iosApp-DevDebug -configuration Debug -destination 'platform=iOS Simulator,OS=latest,name=iPhone 17' CODE_SIGNING_ALLOWED='NO'
+
+      - name: Run iOS Unit + UI Native Tests
+        run: ./gradlew :composeApp:iosSimulatorArm64Test
