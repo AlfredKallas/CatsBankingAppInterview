@@ -1,0 +1,51 @@
+name: PR Check
+# Trigger the workflow only on Pull Requests targeting the 'main' branch
+on:
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  build-android:
+    # Use the latest Ubuntu runner (efficient for most Android/KMP builds)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Prepare Project
+        uses: ./.github/actions/prepare-project-action
+      # Step 4: Build the application
+      # This ensures the code compiles and all resources are valid.
+
+
+
+      - name: Build
+        run: ./gradlew :androidApp:assembleDevDebug
+      # Step 5: Run your tests
+      # This command runs unit tests for all modules.
+      - name: Run Android Unit + UI Runtime Robolectric Tests
+        run: ./gradlew :composeApp:testAndroidHostTest
+      # Step 5: Run your tests
+      # This command runs unit tests for all modules.
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Prepare Project
+        uses: ./.github/actions/prepare-project-action
+
+      - name: Set Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_26.1.1.app/Contents/Developer
+
+      - name: iOS debug build
+        run: cd iosApp && xcodebuild -scheme iosApp-DevDebug -configuration Debug -destination 'platform=iOS Simulator,OS=latest,name=iPhone 17' CODE_SIGNING_ALLOWED='NO'
+
+      - name: Run iOS Unit + UI Native Tests
+        run: ./gradlew :composeApp:iosSimulatorArm64Test
