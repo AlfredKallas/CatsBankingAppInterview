@@ -40,9 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigationevent.NavigationEventInfo
-import androidx.navigationevent.compose.NavigationBackHandler
-import androidx.navigationevent.compose.rememberNavigationEventState
 import com.example.catsbankingapp.presentation.accounts.models.AccountUIModel
 import com.example.catsbankingapp.presentation.accounts.models.BankSectionUIModel
 import com.example.catsbankingapp.presentation.accounts.models.BankUIModel
@@ -70,21 +67,7 @@ fun AccountsScreen(
             is AccountsEvents.OnRetryClicked -> viewModel.getBanksList()
         }
     }
-    val onComposedBackNavigation: () -> Unit = {
-        onBackNavigation.invoke()
-    }
-
-    val navigationEvenState = rememberNavigationEventState<NavigationEventInfo>(
-        currentInfo = NavigationEventInfo.None,
-    )
-    NavigationBackHandler(
-        state = navigationEvenState,
-        isBackEnabled = true,
-        onBackCompleted = {
-            onComposedBackNavigation.invoke()
-        }
-    )
-    AccountsScreen(modifier, uiState, onComposedBackNavigation)
+    AccountsScreen(modifier, uiState, onBackNavigation)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

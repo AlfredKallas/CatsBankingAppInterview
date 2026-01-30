@@ -28,9 +28,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigationevent.NavigationEventInfo
-import androidx.navigationevent.compose.NavigationBackHandler
-import androidx.navigationevent.compose.rememberNavigationEventState
 import com.example.catsbankingapp.presentation.error.ErrorScreen
 import com.example.catsbankingapp.presentation.loading.LoadingScreen
 import com.example.catsbankingapp.presentation.operations.models.AccountOperationsScreenModel
@@ -47,20 +44,6 @@ fun OperationsListScreen(
 ) {
     val viewModel = koinViewModel<OperationsListViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val navigationEvenState = rememberNavigationEventState<NavigationEventInfo>(
-        currentInfo = NavigationEventInfo.None,
-    )
-    val onComposedBackNavigation: () -> Unit = {
-        onBackNavigation.invoke()
-    }
-
-    NavigationBackHandler(
-        state = navigationEvenState,
-        isBackEnabled = true,
-        onBackCompleted = {
-            onComposedBackNavigation.invoke()
-        }
-    )
 
     viewModel.events.ObserveLifecycleAwareEvents {
         when(it) {
@@ -69,7 +52,7 @@ fun OperationsListScreen(
     }
 
     OperationsListScreen(modifier, uiState,
-        onBackNavigation = onComposedBackNavigation
+        onBackNavigation = onBackNavigation
     )
 }
 
